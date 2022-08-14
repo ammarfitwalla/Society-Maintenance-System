@@ -1,0 +1,502 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+  .table {
+    width: 85%;
+    margin: auto;
+  }
+
+  thead {
+    color: white;
+    background: linear-gradient(135deg, #CC2973, #4555D2);
+
+  }
+
+  th {
+    text-align: center;
+  }
+
+  body {
+    margin-top: 10%;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .containerx {
+
+    display: block;
+    margin: auto;
+    max-width: 700px;
+    width: 80%;
+    background-color: #fff;
+    padding: 25px 30px;
+    border-radius: 5px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+  }
+
+  .containerx .title {
+    text-align: center;
+    font-size: 27px;
+    font-weight: bold;
+    position: relative;
+  }
+
+  .content form .user-details {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 20px 0 12px 0;
+  }
+
+  form .user-details .input-box {
+    margin-bottom: 15px;
+    width: calc(100% / 2 - 20px);
+  }
+
+  form .input-box span.details {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+
+  .user-details .input-box input {
+    height: 30px;
+    width: 100%;
+    outline: none;
+    font-size: 15px;
+    border-radius: 12px;
+    padding-left: 15px;
+    border: 1px solid #ccc;
+    border-bottom-width: 2px;
+    transition: all 0.8s ease;
+  }
+
+  .user-details .input-box input:focus,
+  .user-details .input-box input:valid {
+    border-color: #9b59b6;
+  }
+
+  form .gender-details .gender-title {
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  form .category {
+    display: flex;
+    width: 80%;
+    margin: 14px 0;
+    justify-content: space-between;
+  }
+
+  form .category label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  form .button {
+    height: 45px;
+    margin: 35px 0
+  }
+
+  form .button input {
+    height: 100%;
+    width: 100%;
+    border-radius: 5px;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #CC2973, #4555D2);
+  }
+
+  form .button input:hover {
+    /* transform: scale(0.99); */
+    background: linear-gradient(-135deg, #CC2973, #4555D2);
+  }
+
+  @media(max-width: 584px) {
+    .containerx {
+      max-width: 100%;
+    }
+
+    form .user-details .input-box {
+      margin-bottom: 15px;
+      width: 100%;
+    }
+
+    form .category {
+      width: 100%;
+    }
+
+    .content form .user-details {
+      max-height: 300px;
+      overflow-y: scroll;
+    }
+
+    .user-details::-webkit-scrollbar {
+      width: 5px;
+    }
+  }
+
+  @media(max-width: 459px) {
+    .containerx .content .category {
+      flex-direction: column;
+    }
+  }
+
+
+
+</style>
+
+<body>
+<div class="container">
+
+    <!-- MESSAGE -->
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert {{message.tags}} alert-dismissible fade show mb-0" role="alert">
+        <strong>
+            {{message}}
+        </strong>
+        <!--        <button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
+        <!--            <span aria-hidden="true">&times;</span>-->
+        <!--        </button>-->
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
+
+<div class="containerx">
+    <div class="title">BILL ENTRY</div>
+    <div class="content">
+        <form method="POST" id="myForm" action="{% url 'tenant_bill' %}">
+            {% csrf_token %}
+            <div class="user-details">
+
+                <div class="input-box">
+                    <label for="browser">House Number</label>
+                    <input onchange="myFunction()" list="browsers" name="house" id="browser" required>
+                    <datalist id="browsers">
+                        {% for i in house_ %}
+                        <option value="{{ i }}">
+                            {% endfor %}
+                    </datalist>
+                </div>
+
+                <div class="input-box">
+                    <label for="browser1">Tenant Name</label>
+                    <input onchange="get_bill(event)" list="browsers1" name="room" id="browser1" required>
+                    <!-- <input onchange="getAllData()" list="browsers1" name="room" id="browser1" required> -->
+                    <datalist id="browsers1">
+                    </datalist>
+                </div>
+
+                <div id="room_id" class="input-box">
+                    <span class="details">Room Number</span>
+                    <input id='room_num' type="text" name="room" readonly="readonly"/>
+                </div>
+                <div id="cts_id" class="input-box">
+                    <span class="details">CTS Number</span>
+                    <input id='cts_num' type="text" name="cts" readonly="readonly" value="{{mob_num}}"/>
+                </div>
+
+
+                <div id="ten_mn" class="input-box">
+                    <span class="details">Tenant Mobile Number</span>
+                    <input id="mob_num" type="tel" pattern="[0-9]{10}" name="tenant_mobile_number"/>
+                </div>
+                <div id="ten_dod" class="input-box">
+                    <span class="details">Tenant Date of Death</span>
+                    <input id="date" type="date" name="tenant_dod"/>
+                </div>
+
+                <!-- <div id="per_adr" class="input-box" style="width: 100%;">
+                <span class="details">Tenant Alternate Address</span>
+                <input id="pa" type="text" name="permanent_address" required />
+              </div>
+              </div> note extra div
+
+
+
+            <div class="user-details">
+              <label>Tenant Gender</label>
+              <input type="radio" style="margin: 6px;" id="tenant_gender_male" name="tenant_gender" value="Male" required>
+              <label for="tenant_gender_male">Male</label><br>
+              <input type="radio" style="margin: 6px;" id="tenant_gender_female" name="tenant_gender" value="Female" required>
+              <label for="tenant_gender_female">Female</label><br>
+            </div> -->
+
+
+                <div class="input-box">
+                    <span class="details">Bill for month of</span>
+                    <input id="bill_for_month_of" type="month" name="bill_for_month_of"/>
+                </div>
+
+                <div class="input-box">
+                    <span class="details">Book Number</span>
+                    <input id="book_number" type="text" name="book_number" required/>
+                </div>
+
+                <div class="input-box">
+                    <span class="details">Bill Number</span>
+                    <input id="bill_number" type="text" name="bill_number" required/>
+                </div>
+
+                <div class="input-box">
+                    <span class="details">Purpose For</span>
+                    <input id="purpose_for" type="text" name="purpose_for" required value="For Residence"/>
+                </div>
+
+
+                <div id="rent_for_month_from" class="input-box">
+                    <span class="details">Rent for month of/from</span>
+                    <input id="from_date" onchange="monthDiff()" type="month" name="rent_for_month_from" required/>
+                </div>
+
+                <div id="rent_for_month_to" class="input-box">
+                    <span class="details">Rent for month to</span>
+                    <input id="to_date" onchange="monthDiff()" type="month" name="rent_for_month_to" required/>
+                </div>
+
+
+                <div id="at_the_rate_of" class="input-box">
+                    <span class="details">@ </span>
+                    <input id="rate" onchange="multiplyMonth()" type="text" name="at_the_rate_of" required/>
+                </div>
+
+                <div id="total_months" class="input-box">
+                    <span class="details">Total Months </span>
+                    <input id="tm" onchange="multiplyMonth()" type="text" name="total_months" readonly="readonly"/>
+                </div>
+
+                <div id="total_rupees" class="input-box">
+                    <span class="details">Total Rupees </span>
+                    <input id="tr" type="text" name="total_rupees" readonly="readonly"/>
+                </div>
+
+                <div class="input-box">
+                    <span class="details">Extra Payment</span>
+                    <input id="extra_payment" type="text" name="extra_payment" value="0"/>
+                </div>
+                <div class="input-box">
+                    <span class="details">Received Date</span>
+                    <input id="received_date" type="date" name="received_date" required/>
+                </div>
+                <div class="input-box">
+                    <span class="details">Agreement Date</span>
+                    <input id="agreement_date" type="date" name="agreement_date"/>
+                </div>
+
+                <div class="input-box" style="width: 100%;">
+                    <span class="details">Notes</span>
+                    <input id="notes" type="text" name="notes"/>
+                </div>
+            </div>
+
+            <div class="button">
+                <input type="submit" value="Save">
+            </div>
+            <div class="button">
+                <input type="submit" value="Print" name="print">
+            </div>
+        </form>
+    </div>
+</div>
+<br>
+
+<div>
+    <table border="1" class="dataframe table table-bordered table-sm table-responsive-sm table-hover">
+
+        <thead>
+        <tr style="text-align: right;">
+            <th>House No.</th>
+            <th>Room No.</th>
+            <th>CTS No.</th>
+            <th>Name</th>
+            <th>Rent from-to</th>
+            <th>Bill for month of</th>
+            <th>Book No.</th>
+            <th>Bill No.</th>
+            <th>Total Month</th>
+            <th>@</th>
+            <th>Total Amount</th>
+            <th>Extra Payment</th>
+            <th>Purpose</th>
+            <th>Agreement Date</th>
+            <th>Notes</th>
+            <th>Mobile No.</th>
+            <th>DOD</th>
+            <!--            <th>Gender</th>-->
+            <th>Received Date</th>
+            <th>Bill ID</th>
+            <th>Update</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for bill in all_bill_data %}
+        <tr>
+            <td>{{bill.house_number}}</td>
+            <td>{{bill.room_number}}</td>
+            <td>{{bill.cts_number}}</td>
+            <td>{{bill.tenant_name}}</td>
+            <td>{{bill.rent_from}} -to- {{bill.rent_to}}</td>
+            <td>{{bill.bill_for_month_of}}</td>
+            <td>{{bill.book_number}}</td>
+            <td>{{bill.bill_number}}</td>
+            <td>{{bill.total_months}}</td>
+            <td>{{bill.at_the_rate_of}}</td>
+            <td>{{bill.total_rupees}}</td>
+            <td>{{bill.extra_payment}}</td>
+            <td>{{bill.purpose_for}}</td>
+            <td>{{bill.agreement_date}}</td>
+            <td>{{bill.notes}}</td>
+            <td>{{bill.tenant_mobile_number}}</td>
+            <td>{{bill.tenant_dod}}</td>
+            <!--                        <td>{{bill.tenant_gender}}</td>-->
+            <td>{{bill.received_date}}</td>
+            <td>{{bill.id}}</td>
+            <td><a href="{% url 'tenant_bill' %}">Update</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+    document.getElementById("rate").value = 350;
+
+    function myFunction() {
+      var x = document.getElementById("browser").value;
+      console.log('selected house : ', x);
+
+      let list = document.getElementById("browsers1");
+
+      while (list.firstChild) {
+        list.removeChild(list.firstChild);
+      }
+
+      document.getElementById("browser1").value = '';
+
+      $.post("{% url 'name_room_list' %}",
+        {
+          csrfmiddlewaretoken: '{{ csrf_token}}',
+          'h_num': x,
+        },
+        function(data){
+          console.log(data);
+
+          if (data['tname_room'].length > 0) {
+
+              for (let r = 0; r < data['tname_room'].length; r++) {
+                let li = document.createElement("option");
+                li.innerText = data['tname_room'][r];
+                list.appendChild(li);
+              }
+          } else {
+              alert('Data fetch failed, please refresh the page and try again.');
+          }
+
+        }
+      );
+    }
+
+
+    function monthDiff() {
+      var d_from = document.getElementById("from_date").value;
+      var d_to = document.getElementById("to_date").value;
+
+      if (d_from && d_to) {
+
+        if (parseInt(d_to.split('-')[0]) != parseInt(d_from.split('-')[0])) {
+          var y_diff = parseInt(d_to.split('-')[0]) - parseInt(d_from.split('-')[0]);
+        } else {
+          var y_diff = 0
+        }
+
+        var m_diff = parseInt(d_to.split('-')[1]) - parseInt(d_from.split('-')[1])
+        // document.getElementById("tm").value = m_diff;
+        document.getElementById("tm").value = m_diff + (12 * y_diff) + 1;
+        multiplyMonth();
+      }
+    }
+
+
+    function multiplyMonth() {
+      var rate = document.getElementById("rate").value;
+      var tm = document.getElementById("tm").value;
+      if (rate && tm) {
+        var t_rupees = rate * tm
+        if (isNaN(t_rupees)) {
+          document.getElementById("tr").value = 0;
+        } else {
+          document.getElementById("tr").value = t_rupees;
+        }
+      }
+    }
+
+
+    function get_bill(e) {
+      house_num = document.getElementById("browser").value;
+      var ten_name = document.getElementById("browser1").value;
+
+      var n_ = ten_name.split('---')[0]
+      var r_ = ten_name.split('---')[1]
+      $.post("{% url 'get_old_bill' %}",
+        {
+          csrfmiddlewaretoken: '{{ csrf_token}}',
+          'house_num': house_num,
+          'name': n_,
+          'room': r_,
+        },
+        function(data){
+          if (Object.keys(data).length > 4) {
+              document.getElementById("myForm").reset();
+              document.getElementById("browser").value = house_num;
+              document.getElementById("browser1").value = n_;
+              document.getElementById("room_num").value = r_;
+              document.getElementById("cts_num").value = data['cts'];
+              document.getElementById("mob_num").value = data['tmn'];
+              document.getElementById("date").value = data['tdod'];
+              document.getElementById("bill_for_month_of").value = data['bfm'];
+              document.getElementById("book_number").value = data['bkn'];
+              document.getElementById("bill_number").value = data['bln'];
+              document.getElementById("purpose_for").value = data['pf'];
+              document.getElementById("from_date").value = data['rfm'];
+              document.getElementById("to_date").value = data['rto'];
+              document.getElementById("rate").value = data['atr'];
+              document.getElementById("tm").value = data['tmnth'];
+              document.getElementById("tr").value = data['trp'];
+              document.getElementById("extra_payment").value = data['expm'];
+              document.getElementById("received_date").value = data['rdte'];
+              document.getElementById("agreement_date").value = data['agdt'];
+              document.getElementById("notes").value = data['note'];
+          } else if (Object.keys(data).length == 3) {
+              document.getElementById("myForm").reset();
+              document.getElementById("rate").value = 350;
+              document.getElementById("browser").value = house_num;
+              document.getElementById("browser1").value = n_;
+              document.getElementById("room_num").value = r_;
+              document.getElementById("cts_num").value = data['cts'];
+              document.getElementById("mob_num").value = data['tmn'];
+              document.getElementById("date").value = data['tdod'];
+
+          } else {
+              alert('Data fetch failed, please refresh the page and try again.');
+          }
+        }
+      );
+    }
+
+</script>
+<br><br><br>
+</body>
+{% endblock content %}

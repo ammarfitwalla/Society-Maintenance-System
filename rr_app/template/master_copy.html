@@ -1,0 +1,79 @@
+<!--<form method="POST">-->
+<!--    <div class="container">-->
+
+<!--        <label>Type Chawl Number</label>-->
+<!--        <input type="text" name="chawl"/>-->
+
+<!--        <div id="cts_id" style="display:none;">-->
+<!--            <label>CTS number</label>-->
+<!--            <input type="text" name="cts"/>-->
+<!--        </div>-->
+
+<!--        <div id="room_id" style="display:none;">-->
+<!--            <label>Room number</label>-->
+<!--            <input type="text" name="room" required/>-->
+<!--        </div>-->
+
+<!--        <div id="tenant_id" style="display:none;">-->
+<!--            <label>Tenant name</label>-->
+<!--            <input type="text" name="tenant_name" required/>-->
+<!--            <div>-->
+<!--                <label>Tenant Permanent Address</label>-->
+<!--                <input type="text" name="permanent_address" required/>-->
+<!--            </div>-->
+<!--                <label>Tenant Date of Death</label>-->
+<!--            <input type="date" name="tenant_dod" required/>-->
+<!--            <div>-->
+<!--            <label>Tenant Gender</label>-->
+<!--            <input type="radio" id="tenant_gender_male" name="tenant_gender" value="Male">-->
+<!--                <label for="tenant_gender_male">Male</label><br>-->
+<!--                <input type="radio" id="tenant_gender_female" name="tenant_gender" value="Female">-->
+<!--                <label for="tenant_gender_female">Female</label><br>-->
+<!--            </div>-->
+<!--                <label>Tenant Mobile Number</label>-->
+<!--            <input type="text" name="tenant_mobile_number" required/>-->
+<!--        </div>-->
+
+
+<!--        <div id="submit_id" style="display:none;">-->
+<!--            <input type="submit"/>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</form>-->
+<!--{% endblock %}-->
+
+
+<!--{% block script %}-->
+<!--<script>-->
+
+<!--$('input[name=chawl]').keyup(function(){-->
+<!--if($(this).val().length || $(this).val() != NULL)-->
+<!--    $('#cts_id').show(500);-->
+<!--else-->
+<!--    $('#cts_id').hide(500);-->
+<!--});-->
+
+<!--$('input[name=cts]').keyup(function(){-->
+<!--if($(this).val().length)-->
+<!--$('#room_id').show(500);-->
+<!--    else-->
+<!--    $('#room_id').hide(500);-->
+<!--});-->
+
+<!--$('input[name=room]').keyup(function(){-->
+<!--if($(this).val().length)-->
+<!--$('#tenant_id').show(500);-->
+<!--    else-->
+<!--    $('#tenant_id').hide(500);-->
+<!--});-->
+
+<!--$('input[name=tenant_mobile_number]').keyup(function(){-->
+<!--if($(this).val().length)-->
+<!--$('#submit_id').show(500);-->
+<!--    else-->
+<!--    $('#submit_id').hide(500);-->
+<!--});-->
+
+
+<!--</script>-->
+<!--{% endblock script %}-->

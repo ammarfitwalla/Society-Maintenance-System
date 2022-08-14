@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .table {
+        width: 85%;
+        margin: auto;
+    }
+
+    thead {
+        color: white;
+        background: linear-gradient(135deg, #CC2973, #4555D2);
+
+    }
+
+    th {
+        text-align: center;
+    }
+
+    body {
+        margin-top: 10%;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .containerx {
+
+        display: block;
+        margin: auto;
+        max-width: 700px;
+        width: 80%;
+        background-color: #fff;
+        padding: 25px 30px;
+        border-radius: 5px;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .containerx .title {
+        text-align: center;
+        font-size: 27px;
+        font-weight: bold;
+        position: relative;
+    }
+
+    .content form .user-details {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        margin: 20px 0 12px 0;
+    }
+
+    form .user-details .input-box {
+        margin-bottom: 15px;
+        width: calc(100% / 2 - 20px);
+    }
+
+    form .input-box span.details {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 5px;
+    }
+
+    .user-details .input-box input {
+        height: 45px;
+        width: 100%;
+        outline: none;
+        font-size: 16px;
+        border-radius: 5px;
+        padding-left: 15px;
+        border: 1px solid #ccc;
+        border-bottom-width: 2px;
+        transition: all 0.3s ease;
+    }
+
+    .user-details .input-box input:focus,
+    .user-details .input-box input:valid {
+        border-color: #9b59b6;
+    }
+
+    form .gender-details .gender-title {
+        font-size: 20px;
+        font-weight: 500;
+    }
+
+    form .category {
+        display: flex;
+        width: 80%;
+        margin: 14px 0;
+        justify-content: space-between;
+    }
+
+    form .category label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    form .button {
+        height: 45px;
+        margin: 35px 0
+    }
+
+    form .button input {
+        height: 100%;
+        width: 100%;
+        border-radius: 5px;
+        border: none;
+        color: #fff;
+        font-size: 18px;
+        font-weight: 500;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #CC2973, #4555D2);
+    }
+
+    form .button input:hover {
+        /* transform: scale(0.99); */
+        background: linear-gradient(-135deg, #CC2973, #4555D2);
+    }
+
+    @media(max-width: 584px) {
+        .containerx {
+            max-width: 100%;
+        }
+
+        form .user-details .input-box {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        form .category {
+            width: 100%;
+        }
+
+        .content form .user-details {
+            max-height: 300px;
+            overflow-y: scroll;
+        }
+
+        .user-details::-webkit-scrollbar {
+            width: 5px;
+        }
+    }
+
+    @media(max-width: 459px) {
+        .containerx .content .category {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<body>
+    <div class="container">
+
+        <!-- MESSAGE -->
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert {{message.tags}} alert-dismissible fade show mb-0" role="alert">
+            <strong>
+                {{message}}
+            </strong>
+            <!--        <button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
+            <!--            <span aria-hidden="true">&times;</span>-->
+            <!--        </button>-->
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+
+
+    <div class="containerx">
+        <div class="title">UPDATE DETAILS</div>
+        <div class="content">
+            <form method="POST" action="#">
+                {% csrf_token %}
+                <div class="user-details">
+                    <div class="input-box">
+                        <label for="browser">House Number</label>
+                        <input list="browsers" name="house" id="browser" required value="{{house_number}}">
+                        <datalist id="browsers">
+                            {% for i in temp %}
+                            <option value="{{ i }}">
+                            {% endfor %}
+                        </datalist>
+                    </div>
+                    <div id="room_id" class="input-box">
+                        <span class="details">Room Number</span>
+                        <input type="text" name="room" required value="{{room_number}}"/>
+                    </div>
+                    <div id="cts_id" class="input-box">
+                        <span class="details">CTS Number</span>
+                        <input type="text" name="cts" required value="{{cts_number}}"/>
+                    </div>
+                    <div id="tenant_id" class="input-box">
+                        <span class="details">Tenant Name</span>
+                        <input type="text" name="tenant_name" required value="{{tenant_name}}"/>
+                    </div>
+                    <div id="ten_mn" class="input-box">
+                        <span class="details">Tenant Mobile Number</span>
+                        <input type="tel" pattern="[0-9]{10}" name="tenant_mobile_number"  value="{{tenant_mobile_number}}"/>
+                    </div>
+                    <div id="ten_dod" class="input-box">
+                        <span class="details">Tenant Date of Death</span>
+                        <input type="date" name="tenant_dod"  value="{{tenant_dod}}"/>
+                    </div>
+
+                    <div id="per_adr" class="input-box" style="width: 100%;">
+                        <span class="details">Tenant Alternate Address</span>
+                        <input type="text" name="permanent_address"  value="{{tenant_permanent_address}}"/>
+                    </div>
+                </div>
+
+                <div class="user-details">
+                    <label>Tenant Gender</label>
+                    <input type="radio" style="margin: 6px;" id="tenant_gender_male" name="tenant_gender" value="Male"
+                        required>
+                    <label for="tenant_gender_male">Male</label><br>
+                    <input type="radio" style="margin: 6px;" id="tenant_gender_female" name="tenant_gender"
+                        value="Female" required>
+                    <label for="tenant_gender_female">Female</label><br>
+                </div>
+
+                <div class="button">
+                    <input type="submit" value="Submit">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        if ("{{tenant_gender|safe}}" == "Male") {
+          document.getElementById("tenant_gender_male").checked = true;
+        } else {
+          document.getElementById("tenant_gender_female").checked = true;
+        }
+        console.log("{{tenant_gender|safe}}");
+    </script>
+</body>
+<br><br><br>
+{% endblock content %}

@@ -1,0 +1,41 @@
+-------------------------------
+ TODO: 22/09/2021 || 15:00 pm
+-------------------------------
+1. verify room number, contact details already present in db or not in master entry - DONE
+2. add details to db from views of master entry. - DONE
+
+-------------------------------
+ TODO: 12/03/2022 || 15:30 pm
+-------------------------------
+1. Create final page
+    - make model for fields
+    - create dummy UI
+    - integrate backend with frontend
+
+----------------------------------------------------------------------------------
+CHANGES - 04-05-2022
+----------------------------------------------------------------------------------
+BILL PAGE TABLE
+------------------------------
+
+4. give edit option in table - Ammar
+
+--------------------------------------------
+COMPLETED
+--------------------------------------------
+3. bill number and book number issue - Ammar - 21-05-2022
+6. give tenant attrs in bill model (not foreign key) - Ammar  - 21-05-2022
+1. Room number display nai hora hai kuch room ka (hyphen issue) & (clear Cache of names) - Saalem - 13-08-2022
+2. Jan to march 3 months not 2 - Saalem - 13-08-2022
+5. when tenant name is selected, auto-fill all previous details if any - Saalem - 13-08-2022
+
+
+----------------------------------------------------------------------------------
+CHANGES - 14-08-2022
+----------------------------------------------------------------------------------
+BILL PAGE TABLE
+------------------------------
+1. Change UI Form structure.
+2. Prompt User if new bill month and  year is less than old bill month and year
+3. Edit option of existing bill on row click 
+4. Report page

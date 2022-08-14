@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="containerx">
+    <div class="title">BILL ENTRY</div>
+    <div class="content">
+        <form method="POST" action="#">
+            {% csrf_token %}
+            <div class="user-details">
+                <div class="input-box">
+                    <label for="browser">House Number</label>
+                    <input list="browsers" name="house" id="browser" required>
+                    <datalist id="browsers">
+                        {% for i in temp %}
+                        <option value="{{ i }}">
+                            {% endfor %}
+                    </datalist>
+                </div>
+                <div class="input-box">
+                    <label for="browser">Tenant Name</label>
+                    <input list="browsers" name="house" id="tenant_name_browser" required>
+                    <datalist id="tenant_name_browsers">
+                        {% for i in temp %}
+                        <option value="{{ i }}">
+                            {% endfor %}
+                    </datalist>
+                </div>
+                <div id="ten_dod" class="input-box">
+                    <span class="details">Tenant Date of Death</span>
+                    <input type="date" name="tenant_dod"/>
+                </div>
+
+                <div id="ten_mn" class="input-box">
+                    <span class="details">Tenant Mobile Number</span>
+                    <input type="tel" pattern="[0-9]{10}" name="tenant_mobile_number"/>
+                </div>
+
+                <div id="bill_for_month_of" class="input-box">
+                    <span class="details">Bill for month of</span>
+                    <input type="date" name="bill_for_month_of"/>
+                </div>
+
+                <div id="book_number" class="input-box">
+                    <span class="details">Book Number</span>
+                    <input type="text" name="book_number" required/>
+                </div>
+
+                <div id="bill_number" class="input-box">
+                    <span class="details">Bill Number</span>
+                    <input type="text" name="bill_number" required/>
+                </div>
+
+                <div id="purpose_for" class="input-box">
+                    <span class="details">Purpose For</span>
+                    <input type="text" name="purpose_for" required/>
+                </div>
+
+                <div id="cts_id" class="input-box">
+                    <span class="details">CTS Number</span>
+                    <input type="text" name="cts" required/>
+                </div>
+
+                <div id="room_number" class="input-box">
+                    <span class="details">Room Number</span>
+                    <input type="text" name="room_number" required/>
+                </div>
+
+                <div id="rent_for_month_from" class="input-box">
+                    <span class="details">Rent from month from</span>
+                    <input type="date" name="rent_for_month_from"/>
+                </div>
+
+                <div id="rent_for_month_to" class="input-box">
+                    <span class="details">Rent from month to</span>
+                    <input type="date" name="rent_for_month_to"/>
+                </div>
+
+                <div id="at_the_rate_of" class="input-box">
+                    <span class="details">@ </span>
+                    <input type="text" name="at_the_rate_of" required/>
+                </div>
+
+                <div id="total_months" class="input-box">
+                    <span class="details">Total Months </span>
+                    <input type="text" name="total_months" required/>
+                </div>
+
+                <div id="total_rupees" class="input-box">
+                    <span class="details">Total Rupees </span>
+                    <input type="text" name="total_rupees" required/>
+                </div>
+
+                <div id="received_date" class="input-box">
+                    <span class="details">Received Date</span>
+                    <input type="date" name="received_date"/>
+                </div>
+
+                <div id="agreement_date" class="input-box">
+                    <span class="details">Agreement Date</span>
+                    <input type="date" name="agreement_date"/>
+                </div>
+                <div id ="extra_payment" class="input-box">
+                    <span class="details">Extra Payment</span>
+                    <input type="text" name="extra_payment"/>
+                </div>
+                <div id ="notes" class="input-box">
+                    <span class="details">Notes</span>
+                    <input type="text" name="notes"/>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>House Data</title>
+
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+</head>
+<body>
+
+
+<section class="get-in-touch">
+    <h1 class="title">HOUSE DATA</h1>
+    <form class="contact-form row" method="POST">
+        {% csrf_token %}
+        <div class="form-field col-lg-6">
+            <input class="input-text js-input" placeholder="House Number" name="house_number" type="text" required>
+            <!--                        <label class="label" for="house_number">House Number</label>-->
+        </div>
+        <div class="form-field col-lg-6 ">
+            <input class="input-text js-input" placeholder="Room Number" name="room_number" type="text" required>
+            <!--            <label class="label" for="room_number">Room Number</label>-->
+        </div>
+        <div class="form-field col-lg-6 ">
+            <input class="input-text js-input" placeholder="Tenant" name="tenant" type="text" required>
+            <!--            <label class="label" for="tenant">Tenant</label>-->
+        </div>
+        <div class="form-field col-lg-6 ">
+            <input class="input-text js-input" placeholder="CTS Number" name="cts_number" type="text" required>
+            <!--            <label class="label" for="cts_number">CTS Number</label>-->
+        </div>
+        <div class="form-field col-lg-6">
+            <input class="input-text js-input" placeholder="Book Number" name="book_number" type="text" required>
+            <!--            <label class="label" for="book_number">Book Number</label>-->
+        </div>
+        <div class="form-field col-lg-6">
+            <input class="input-text js-input" placeholder="Bill Number" name="bill_number" type="text" required>
+            <!--            <label class="label" for="bill_number">Bill</label>-->
+        </div>
+        <div class="form-field col-lg-6">
+            <input class="submit-btn" type="submit" value="Submit">
+        </div>
+        <div class="form-field col-lg-6">
+            <input class="submit-btn" type="submit" value="Add New Data">
+        </div>
+    </form>
+</section>
+
+
+</body>
+</html>
