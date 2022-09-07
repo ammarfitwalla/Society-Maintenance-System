@@ -177,45 +177,42 @@
 <div class="containerx">
     <div class="title">BILL ENTRY</div>
     <div class="content">
-        <form method="POST" id="myForm" action="{% url 'tenant_bill' %}">
+
+        {% for one_bill_data in filtered_one_bill_data %}
+
+        <form method="POST" id="myForm">
             {% csrf_token %}
             <div class="user-details">
 
                 <div class="input-box">
                     <label for="browser">House Number</label>
-                    <input onchange="myFunction()" list="browsers" name="house" id="browser" required>
-                    <datalist id="browsers">
-                        {% for i in house_ %}
-                        <option value="{{ i }}">
-                            {% endfor %}
-                    </datalist>
+                    <input name="house" id="browser" required value="{{one_bill_data.house_number}}" readonly="readonly">
                 </div>
+
 
                 <div class="input-box">
                     <label for="browser1">Tenant Name</label>
-                    <input onchange="get_bill(event)" list="browsers1" name="room" id="browser1" required>
-                    <!-- <input onchange="getAllData()" list="browsers1" name="room" id="browser1" required> -->
-                    <datalist id="browsers1">
-                    </datalist>
+                    <input name="room" id="browser1" required value="{{one_bill_data.tenant_name}}" readonly="readonly">
                 </div>
 
                 <div id="room_id" class="input-box">
                     <span class="details">Room Number</span>
-                    <input id='room_num' type="text" name="room" readonly="readonly"/>
+                    <input id='room_num' type="text" name="room" readonly="readonly" value="{{one_bill_data.room_number}}"/>
                 </div>
+
                 <div id="cts_id" class="input-box">
                     <span class="details">CTS Number</span>
-                    <input id='cts_num' type="text" name="cts" readonly="readonly" value="{{mob_num}}"/>
+                    <input id='cts_num' type="text" name="cts" readonly="readonly" value="{{one_bill_data.cts_number}}"/>
                 </div>
 
 
                 <div id="ten_mn" class="input-box">
                     <span class="details">Tenant Mobile Number</span>
-                    <input id="mob_num" type="tel" pattern="[0-9]{10}" name="tenant_mobile_number"/>
+                    <input id="mob_num" type="tel" pattern="[0-9]{10}" name="tenant_mobile_number" value="{{one_bill_data.tenant_mobile_number}}"/>
                 </div>
                 <div id="ten_dod" class="input-box">
                     <span class="details">Tenant Date of Death</span>
-                    <input id="date" type="date" name="tenant_dod"/>
+                    <input id="date" type="date" name="tenant_dod" value="{{one_bill_data.tenant_dod}}"/>
                 </div>
 
                 <!-- <div id="per_adr" class="input-box" style="width: 100%;">
@@ -237,67 +234,69 @@
 
                 <div class="input-box">
                     <span class="details">Bill for month of</span>
-                    <input id="bill_for_month_of" type="month" name="bill_for_month_of"/>
+                    {{one_bill_data.bill_for_month_of}} # printed to test
+                    <input id="bill_for_month_of" type="month" name="bill_for_month_of" value="{{one_bill_data.bill_for_month_of}}"/>
+<!--                    <input id="bill_for_month_of" type="month" name="bill_for_month_of" value="2022-01"/>-->
                 </div>
 
                 <div class="input-box">
                     <span class="details">Book Number</span>
-                    <input id="book_number" type="text" name="book_number" required/>
+                    <input id="book_number" type="text" name="book_number" required value="{{one_bill_data.book_number}}"/>
                 </div>
 
                 <div class="input-box">
                     <span class="details">Bill Number</span>
-                    <input id="bill_number" type="text" name="bill_number" required/>
+                    <input id="bill_number" type="text" name="bill_number" required value="{{one_bill_data.bill_number}}"/>
                 </div>
 
                 <div class="input-box">
                     <span class="details">Purpose For</span>
-                    <input id="purpose_for" type="text" name="purpose_for" required value="For Residence"/>
+                    <input id="purpose_for" type="text" name="purpose_for" required value="{{one_bill_data.purpose_for}}"/>
                 </div>
 
 
                 <div id="rent_for_month_from" class="input-box">
                     <span class="details">Rent for month of/from</span>
-                    <input id="from_date" onchange="monthDiff()" type="month" name="rent_for_month_from" required/>
+                    <input id="from_date" onchange="monthDiff()" type="month" name="rent_for_month_from" required value="{{one_bill_data.rent_from}}"/>
                 </div>
 
                 <div id="rent_for_month_to" class="input-box">
                     <span class="details">Rent for month to</span>
-                    <input id="to_date" onchange="monthDiff()" type="month" name="rent_for_month_to" required/>
+                    <input id="to_date" onchange="monthDiff()" type="month" name="rent_for_month_to" required value="{{one_bill_data.rent_to}}"/>
                 </div>
 
 
                 <div id="at_the_rate_of" class="input-box">
                     <span class="details">@ </span>
-                    <input id="rate" onchange="multiplyMonth()" type="text" name="at_the_rate_of" required/>
+                    <input id="rate" onchange="multiplyMonth()" type="text" name="at_the_rate_of" required value="{{one_bill_data.at_the_rate_of}}"/>
                 </div>
 
                 <div id="total_months" class="input-box">
                     <span class="details">Total Months </span>
-                    <input id="tm" onchange="multiplyMonth()" type="text" name="total_months" readonly="readonly"/>
+                    <input id="tm" onchange="multiplyMonth()" type="text" name="total_months" readonly="readonly" value="{{one_bill_data.total_months}}"/>
                 </div>
 
                 <div id="total_rupees" class="input-box">
                     <span class="details">Total Rupees </span>
-                    <input id="tr" type="text" name="total_rupees" readonly="readonly"/>
+                    <input id="tr" type="text" name="total_rupees" readonly="readonly" value="{{one_bill_data.total_rupees}}"/>
                 </div>
 
                 <div class="input-box">
                     <span class="details">Extra Payment</span>
-                    <input id="extra_payment" type="text" name="extra_payment" value="0"/>
+                    <input id="extra_payment" type="text" name="extra_payment" value="{{one_bill_data.extra_payment}}"/>
                 </div>
                 <div class="input-box">
                     <span class="details">Received Date</span>
-                    <input id="received_date" type="date" name="received_date" required/>
+                    <input id="received_date" type="date" name="received_date" required value="{{one_bill_data.received_date}}"/>
                 </div>
                 <div class="input-box">
                     <span class="details">Agreement Date</span>
-                    <input id="agreement_date" type="date" name="agreement_date"/>
+                    <input id="agreement_date" type="date" name="agreement_date" value="{{one_bill_data.agreement_date}}"/>
                 </div>
 
                 <div class="input-box" style="width: 100%;">
                     <span class="details">Notes</span>
-                    <input id="notes" type="text" name="notes"/>
+                    <input id="notes" type="text" name="notes" value="{{one_bill_data.notes}}"/>
                 </div>
             </div>
 
@@ -308,67 +307,10 @@
                 <input type="submit" value="Print" name="print">
             </div>
         </form>
+    {% endfor %}
     </div>
 </div>
 <br>
-
-<div>
-    <table border="1" class="dataframe table table-bordered table-sm table-responsive-sm table-hover">
-
-        <thead>
-        <tr style="text-align: right;">
-            <th>House No.</th>
-            <th>Room No.</th>
-            <th>CTS No.</th>
-            <th>Name</th>
-            <th>Rent from-to</th>
-            <th>Bill for month of</th>
-            <th>Book No.</th>
-            <th>Bill No.</th>
-            <th>Total Month</th>
-            <th>@</th>
-            <th>Total Amount</th>
-            <th>Extra Payment</th>
-            <th>Purpose</th>
-            <th>Agreement Date</th>
-            <th>Notes</th>
-            <th>Mobile No.</th>
-            <th>DOD</th>
-            <!--            <th>Gender</th>-->
-            <th>Received Date</th>
-            <th>Bill ID</th>
-            <th>Update</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for bill in all_bill_data %}
-        <tr>
-            <td>{{bill.house_number}}</td>
-            <td>{{bill.room_number}}</td>
-            <td>{{bill.cts_number}}</td>
-            <td>{{bill.tenant_name}}</td>
-            <td>{{bill.rent_from}} -to- {{bill.rent_to}}</td>
-            <td>{{bill.bill_for_month_of}}</td>
-            <td>{{bill.book_number}}</td>
-            <td>{{bill.bill_number}}</td>
-            <td>{{bill.total_months}}</td>
-            <td>{{bill.at_the_rate_of}}</td>
-            <td>{{bill.total_rupees}}</td>
-            <td>{{bill.extra_payment}}</td>
-            <td>{{bill.purpose_for}}</td>
-            <td>{{bill.agreement_date}}</td>
-            <td>{{bill.notes}}</td>
-            <td>{{bill.tenant_mobile_number}}</td>
-            <td>{{bill.tenant_dod}}</td>
-            <!--                        <td>{{bill.tenant_gender}}</td>-->
-            <td>{{bill.received_date}}</td>
-            <td>{{bill.id}}</td>
-            <td><a href="/tenant_bill_crud/{{bill.id}}">Update</a></td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
 
 
 <script>

@@ -39,3 +39,11 @@ BILL PAGE TABLE
 2. Prompt User if new bill month and  year is less than old bill month and year
 3. Edit option of existing bill on row click 
 4. Report page
+
+-------------------------------------------------------------------
+1. permenant address / Notes - Notes
+2. multiple names (,) or new input text feild - max 4 new input feilds
+3. tick mark in reports - not required
+4. edit tenant details on master entry pop up on submit - required 
+5. 1 book - 100 bills max. - automatic increment bill and book number
+6 master entry - new tenant add but not replace old tenant discussion with Saalem

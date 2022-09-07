@@ -192,7 +192,9 @@ def crud_operation(request, tenant_id):
             insert_room_number.save()
             get_room_number_id = RoomNumber.objects.get(id=room_number_id)
 
-        insert_tenant_attributes = TenantAttributes(id=tenant_id, room=get_room_number_id, tenant_name=get_tenant_name, tenant_permanent_address=get_permanent_address, tenant_mobile_number=get_tenant_mobile_number, tenant_dod=get_tenant_dod, tenant_gender=get_tenant_gender)
+        insert_tenant_attributes = TenantAttributes(id=tenant_id, room=get_room_number_id, tenant_name=get_tenant_name,
+                                                                    tenant_permanent_address=get_permanent_address, tenant_mobile_number=get_tenant_mobile_number,
+                                                                    tenant_dod=get_tenant_dod, tenant_gender=get_tenant_gender)
         insert_tenant_attributes.save()
 
         return redirect('/master/')
@@ -228,7 +230,6 @@ def tenant_bill(request):
         received_date = request.POST.get('received_date')
         agreement_date = request.POST.get('agreement_date')
         notes = request.POST.get('notes')
-
         print_button = request.POST.get('print')
 
         if agreement_date == "":
@@ -321,6 +322,117 @@ def tenant_bill(request):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def tenant_bill_crud(request, bill_id):
+    filtered_one_bill_data = Bill.objects.filter(id=bill_id).all()
+
+    if request.method == 'POST':
+        bill_house_number = request.POST.get('house')
+        bill_room_number = request.POST.get('room')
+        bill_cts_number = request.POST.get('cts')
+        # bill_tenant_mobile_number = request.POST.get('tenant_mobile_number')
+        # bill_tenant_name = request.POST.get('tenant_name')
+        # bill_tenant_dod = request.POST.get('tenant_dod')
+        bill_for_month_of = request.POST.get('bill_for_month_of')
+        bill_book_number = request.POST.get('book_number')
+        bill_number = request.POST.get('bill_number')
+        purpose_for = request.POST.get('purpose_for')
+        rent_for_month_from = request.POST.get('rent_for_month_from')
+        rent_for_month_to = request.POST.get('rent_for_month_to')
+        at_the_rate_of = request.POST.get('at_the_rate_of')
+        total_months = request.POST.get('total_months')
+        total_rupees = request.POST.get('total_rupees')
+        extra_payment = request.POST.get('extra_payment')
+        received_date = request.POST.get('received_date')
+        agreement_date = request.POST.get('agreement_date')
+        notes = request.POST.get('notes')
+        print_button = request.POST.get('print')
+
+        if agreement_date == "":
+            agreement_date = None
+
+        rent_for_month_from_long = num_date_to_string(rent_for_month_from, short_form=False)
+        rent_for_month_to_long = num_date_to_string(rent_for_month_to, short_form=False)
+
+        bill_for_month_of_short = num_date_to_string(bill_for_month_of)
+        rent_for_month_from_short = num_date_to_string(rent_for_month_from)
+        rent_for_month_to_short = num_date_to_string(rent_for_month_to)
+
+        get_house_id = HouseNumber.objects.get(house_number=bill_house_number)
+        get_cts_id = CTSNumber.objects.get(house=get_house_id, cts_number=bill_cts_number)
+        get_room_number = (RoomNumber.objects.filter(house=get_house_id, cts=get_cts_id, room_number=bill_room_number).values()[0])
+        get_tenant_attrs = (TenantAttributes.objects.filter(room=get_room_number['id']).values())[0]
+
+        if print_button:
+            # TODO: check if data is present in db, if not, ask user to save first
+
+            check_dir_exists(os.path.join(MEDIA_ROOT, bill_house_number))
+            check_dir_exists(os.path.join(MEDIA_ROOT, bill_house_number, bill_cts_number))
+            check_dir_exists(os.path.join(MEDIA_ROOT, bill_house_number, bill_cts_number, bill_room_number))
+            check_dir_exists(os.path.join(MEDIA_ROOT, bill_house_number, bill_cts_number, bill_room_number, get_tenant_attrs['tenant_name']))
+
+            today = datetime.today()
+            day = '{:02d}'.format(today.day)
+            ordinal_ = str(ordinal(day))[2:]
+            month = today.strftime("%b")
+            year = '{:02d}'.format(today.year)
+
+            for i in range(2):
+                if i == 0:
+                    image = os.path.join(MEDIA_ROOT, 'bill_sample', 'rr_bill.jpg')
+                    img_arr = cv2.imread(image)
+                else:
+                    img_arr = np.zeros([2561, 1763, 3], dtype=np.uint8)
+                    img_arr.fill(255)
+
+                img_arr = cv2.putText(img_arr, bill_for_month_of_short, (600, 830), cv2.FONT_HERSHEY_TRIPLEX, 1.6, (0, 0, 0), 2)  # bill for month of
+                img_arr = cv2.putText(img_arr, bill_book_number, (1127, 830), cv2.FONT_HERSHEY_TRIPLEX, 1.6, (0, 0, 0), 2)  # book number
+                img_arr = cv2.putText(img_arr, bill_number, (1414, 830), cv2.FONT_HERSHEY_TRIPLEX, 1.6, (0, 0, 0), 2)  # bill number
+                img_arr = cv2.putText(img_arr, "For residence", (235, 940), cv2.FONT_HERSHEY_TRIPLEX, 1.6, (0, 0, 0), 2)  # for residence
+                img_arr = cv2.putText(img_arr, bill_cts_number, (1127, 935), cv2.FONT_HERSHEY_TRIPLEX, 1.6, (0, 0, 0), 2)  # cts number
+                img_arr = cv2.putText(img_arr, bill_room_number, (600, 1050), cv2.FONT_HERSHEY_TRIPLEX, 1.6, (0, 0, 0), 2)  # room number
+                img_arr = cv2.putText(img_arr, bill_house_number, (1127, 1050), cv2.FONT_HERSHEY_TRIPLEX, 1.6, (0, 0, 0), 2)  # house number
+                img_arr = cv2.putText(img_arr, get_tenant_attrs['tenant_name'], (378, 1341), cv2.FONT_HERSHEY_TRIPLEX, 1.5, (0, 0, 0), 2)  # Tenant name
+                img_arr = cv2.putText(img_arr, rent_for_month_from_long + " to " + rent_for_month_to_long, (747, 1455), cv2.FONT_HERSHEY_TRIPLEX, 1.4, (0, 0, 0), 2)  # month from and to
+                img_arr = cv2.putText(img_arr, total_rupees, (1127, 1610), cv2.FONT_HERSHEY_TRIPLEX, 1.6, (0, 0, 0), 2)  # total rupees
+                img_arr = cv2.putText(img_arr, "00.", (1483, 1610), cv2.FONT_HERSHEY_TRIPLEX, 1.6, (0, 0, 0), 2)  # month from and to
+                img_arr = cv2.putText(img_arr, "@", (730, 1540), cv2.FONT_HERSHEY_TRIPLEX, 1.6, (0, 0, 0), 2)  # @
+                img_arr = cv2.putText(img_arr, f"Rs. {at_the_rate_of}/-", (665, 1595), cv2.FONT_HERSHEY_TRIPLEX, 1.2, (0, 0, 0), 2)  # rs
+                img_arr = cv2.putText(img_arr, "per month", (665, 1640), cv2.FONT_HERSHEY_TRIPLEX, 1.2, (0, 0, 0), 2)  # per month
+                img_arr = cv2.putText(img_arr, day, (993, 1850), cv2.FONT_HERSHEY_TRIPLEX, 1.3, (0, 0, 0), 2)  # current date
+                img_arr = cv2.putText(img_arr, ordinal_, (1046, 1828), cv2.FONT_HERSHEY_TRIPLEX, 1, (0, 0, 0), 2)  # ordinal
+                img_arr = cv2.putText(img_arr, month, (1260, 1850), cv2.FONT_HERSHEY_TRIPLEX, 1.3, (0, 0, 0), 2)  # current month
+                img_arr = cv2.putText(img_arr, year, (1493, 1850), cv2.FONT_HERSHEY_TRIPLEX, 1.3, (0, 0, 0), 2)  # current year
+
+                img_arr = cv2.resize(img_arr, (1748, 2480))
+                im = cv2.cvtColor(img_arr, cv2.COLOR_BGR2RGB)
+                im = Image.fromarray(im)
+                a5im = Image.new('RGB', (1748, 2480), (255, 255, 255))
+                a5im.paste(im, im.getbbox())
+
+                if i == 0:
+                    pdf_name = os.path.join(MEDIA_ROOT, bill_house_number, bill_cts_number, bill_room_number, get_tenant_attrs['tenant_name'], rent_for_month_from_long + "-to-" + rent_for_month_to_long + ".pdf")
+                    a5im.save(pdf_name, 'PDF', quality=100)
+                else:
+                    pdf_name = os.path.join(MEDIA_ROOT, bill_house_number, bill_cts_number, bill_room_number, get_tenant_attrs['tenant_name'], rent_for_month_from_long + "-to-" + rent_for_month_to_long + "_blank.pdf")
+                    a5im.save(pdf_name, 'PDF', quality=100)
+                    subprocess.Popen([pdf_name], shell=True)
+
+        else:
+            Bill.objects.filter(id=bill_id).update(house_number=bill_house_number, cts_number=bill_cts_number, room_number=bill_room_number,
+                tenant_name=get_tenant_attrs['tenant_name'], tenant_permanent_address=get_tenant_attrs['tenant_permanent_address'],
+                tenant_mobile_number=get_tenant_attrs['tenant_mobile_number'], tenant_dod=get_tenant_attrs['tenant_dod'],
+                tenant_gender=get_tenant_attrs['tenant_gender'], bill_for_month_of=bill_for_month_of_short, book_number=bill_book_number,
+                bill_number=bill_number, purpose_for=purpose_for, rent_from=rent_for_month_from_short, rent_to=rent_for_month_to_short,
+                at_the_rate_of=at_the_rate_of, total_months=total_months, total_rupees=total_rupees, received_date=received_date,
+                extra_payment=extra_payment, agreement_date=agreement_date, notes=notes)
+
+        return redirect('/tenant_bill/')
+
+    context = {'filtered_one_bill_data': filtered_one_bill_data}
+    return render(request, 'tenant_bill_crud.html', context)
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def name_room_list(request):
     get_house = HouseNumber.objects.filter(house_number=request.POST['h_num'])[0]
     all_room_number = RoomNumber.objects.filter(house=get_house)
@@ -356,3 +468,7 @@ def get_old_bill(request):
             return JsonResponse({'tmn': old_ta.tenant_mobile_number, 'cts': get_cts, 'tdod': old_ta.tenant_dod})
         except Exception as e:
             print('CTS Data Fetch Failed!!', str(e))
+
+
+def bill_crud_operation(request):
+    pass
