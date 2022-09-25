@@ -168,8 +168,8 @@
 
   th {
     text-align: center;
-      font-family: "Trebuchet MS", Arial, Verdana;
-  font-size: 10px;
+    font-family: "Trebuchet MS", Arial, Verdana;
+    font-size: 10px;
   }
 
   td {
@@ -309,8 +309,6 @@
       flex-direction: column;
     }
   }
-
-
 </style>
 <!--</style>-->
 <!-- {% for i in temp %}
@@ -318,90 +316,118 @@
 {% endfor %} -->
 <div class="container">
 
-    <!-- MESSAGE -->
-    {% if messages %}
-    {% for message in messages %}
-    <div class="alert {{message.tags}} alert-dismissible fade show mb-0" role="alert">
-        <strong>
-            {{message}}
-        </strong>
-        <!--        <button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
-        <!--            <span aria-hidden="true">&times;</span>-->
-        <!--        </button>-->
-    </div>
-    {% endfor %}
-    {% endif %}
+  <!-- MESSAGE -->
+  {% if messages %}
+  {% for message in messages %}
+  <div class="alert {{message.tags}} alert-dismissible fade show mb-0" role="alert">
+    <strong>
+      {{message}}
+    </strong>
+    <!--        <button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
+    <!--            <span aria-hidden="true">&times;</span>-->
+    <!--        </button>-->
+  </div>
+  {% endfor %}
+  {% endif %}
 </div>
 
 
 <div class="containerx">
-    <div class="title">MASTER ENTRY</div>
-    <div class="content">
-        <form method="POST" action="#">
-            {% csrf_token %}
-            <div class="user-details">
-                <div class="input-box">
-                    <label for="browser">House Number</label>
-                    <input list="browsers" name="house" id="browser" required>
-                    <datalist id="browsers">
-                        {% for i in temp %}
-                        <option value="{{ i }}">
-                            {% endfor %}
-                    </datalist>
-                </div>
-                <div id="room_id" class="input-box">
-                    <span class="details">Room Number</span>
-                    <input type="text" name="room" required/>
-                </div>
-                <div id="cts_id" class="input-box">
-                    <span class="details">CTS Number</span>
-                    <input type="text" name="cts" required/>
-                </div>
-                <div id="tenant_id" class="input-box">
-                    <span class="details">Tenant Name</span>
-                    <input type="text" name="tenant_name" required/>
-                </div>
-                <div id="ten_mn" class="input-box">
-                    <span class="details">Tenant Mobile Number</span>
-                    <input type="tel" pattern="[0-9]{10}" name="tenant_mobile_number"/>
-                </div>
-                <div id="ten_dod" class="input-box">
-                    <span class="details">Tenant Date of Death</span>
-                    <input type="date" name="tenant_dod"/>
-                </div>
+  <div class="title">MASTER ENTRY</div>
+  <div class="content">
+    <form method="POST" id="myForm" action="#">
+      {% csrf_token %}
+      <div class="user-details">
+        <div class="input-box">
+          <label for="browser">House Number</label>
+          <input list="browsers" name="house" id="browser" required>
+          <datalist id="browsers">
+            {% for i in temp %}
+            <option value="{{ i }}">
+              {% endfor %}
+          </datalist>
+        </div>
+        <div class="input-box">
+          <span class="details">Room Number</span>
+          <input id="room_id" type="text" name="room" required />
+        </div>
+        <div class="input-box">
+          <span class="details">CTS Number</span>
+          <input id="cts_id" type="text" name="cts" required />
+        </div>
+        <div class="input-box">
+          <span class="details">Tenant Name</span>
+          <input id="tenant_id" type="text" name="tenant_name" required />
+        </div>
+        <div class="input-box">
+          <span class="details">Tenant Mobile Number</span>
+          <input id="ten_mn" type="tel" pattern="[0-9]{10}" name="tenant_mobile_number" />
+        </div>
+        <div class="input-box">
+          <span class="details">Tenant Date of Death</span>
+          <input id="ten_dod" type="date" name="tenant_dod" />
+        </div>
 
-                <div id="per_adr" class="input-box" style="width: 100%;">
-                    <span class="details">Notes</span>
-                    <input type="text" name="permanent_address"/>
-                </div>
-            </div>
+        <div class="input-box" style="width: 100%;">
+          <span class="details">Notes</span>
+          <input id="per_adr" type="text" name="permanent_address" />
+        </div>
+      </div>
 
-            <div class="user-details">
-                <label>Tenant Gender</label>
-                <input type="radio" style="margin: 3px;" id="tenant_gender_male" name="tenant_gender" value="Male"
-                       required>
-                <label for="tenant_gender_male">Male</label><br>
-                <input type="radio" style="margin: 3px;" id="tenant_gender_female" name="tenant_gender" value="Female"
-                       required>
-                <label for="tenant_gender_female">Female</label><br>
-            </div>
+      <div class="user-details">
+        <label>Tenant Gender</label>
+        <input type="radio" style="margin: 3px;" id="tenant_gender_male" name="tenant_gender" value="Male" required>
+        <label for="tenant_gender_male">Male</label><br>
+        <input type="radio" style="margin: 3px;" id="tenant_gender_female" name="tenant_gender" value="Female" required>
+        <label for="tenant_gender_female">Female</label><br>
+      </div>
 
-            <div class="button">
-                <input type="submit" value="Submit">
-            </div>
-        </form>
-    </div>
+      <div class="button">
+        <input type="submit" value="Submit">
+      </div>
+    </form>
+  </div>
 </div>
 
 
 <br><br><br>
 <div>
-    {% if master_df %}
-    {{ master_df | safe}}
-    {% endif %}
+  {% if master_df %}
+  {{ master_df | safe}}
+  {% endif %}
 </div>
 <br><br><br><br>
+
+<script>
+  function updateMaster(t_id) {
+    $.post("{% url 'crud_operation' %}",
+      {
+        csrfmiddlewaretoken: '{{ csrf_token }}',
+        't_id': t_id,
+      },
+      function (data) {
+        if (Object.keys(data).length > 1) {
+          document.getElementById("myForm").reset();
+          document.getElementById("browser").value = data['house_number'];
+          document.getElementById("tenant_id").value = data['tenant_name'];
+          document.getElementById("room_id").value = data['room_number'];
+          document.getElementById("cts_id").value = data['cts_number'];
+          document.getElementById("ten_mn").value = data['tenant_mobile_number'];
+          document.getElementById("ten_dod").value = data['tenant_dod'];
+          document.getElementById("per_adr").value = data['tenant_permanent_address'];
+          if (data['tenant_gender'] == "Male") {
+            document.getElementById("tenant_gender_male").checked = true;
+          } else {
+            document.getElementById("tenant_gender_female").checked = true;
+          }
+
+        } else {
+          alert('Data fetch failed, please refresh the page and try again.');
+        }
+      }
+    );
+  }
+
+</script>
+
 {% endblock content %}
-
-
-

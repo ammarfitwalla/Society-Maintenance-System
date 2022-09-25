@@ -363,7 +363,7 @@
             <!--                        <td>{{bill.tenant_gender}}</td>-->
             <td>{{bill.received_date}}</td>
             <td>{{bill.id}}</td>
-            <td><a href="/tenant_bill_crud/{{bill.id}}">Update</a></td>
+            <td><a href="javascript:updateBill({{bill.id}});">Update</a></td>
         </tr>
         {% endfor %}
         </tbody>
@@ -495,8 +495,50 @@
         }
       );
     }
+  
 
+    function updateBill(bill_id) {
+      $.post("{% url 'tenant_bill_crud' %}",
+        {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          'bill_id': bill_id,
+        },
+        function (data) {
+          if (Object.keys(data).length > 1) {
+            document.getElementById("myForm").reset();
+            document.getElementById("browser").value = data['house_number'];
+            document.getElementById("browser1").value = data['tenant_name'];
+            document.getElementById("room_num").value = data['room_number'];
+            document.getElementById("cts_num").value = data['cts_number'];
+            document.getElementById("mob_num").value = data['tenant_mobile_number'];
+            document.getElementById("date").value = data['tenant_dod'];
+            document.getElementById("bill_for_month_of").value = data['bill_for_month_of'];
+            document.getElementById("book_number").value = data['book_number'];
+            document.getElementById("bill_number").value = data['bill_number'];
+            document.getElementById("purpose_for").value = data['purpose_for'];
+            document.getElementById("from_date").value = data['rent_from'];
+            document.getElementById("to_date").value = data['rent_to'];
+            document.getElementById("rate").value = data['at_the_rate_of'];
+            document.getElementById("tm").value = data['total_months'];
+            document.getElementById("tr").value = data['total_rupees'];
+            document.getElementById("extra_payment").value = data['extra_payment'];
+            document.getElementById("received_date").value = data['received_date'];
+            document.getElementById("agreement_date").value = data['agreement_date'];
+            document.getElementById("notes").value = data['notes'];
+          } else {
+            alert('Data fetch failed, please refresh the page and try again.');
+          }
+        }
+      );
+    }
 </script>
 <br><br><br>
 </body>
+
+
+<script>
+
+
+</script>
+
 {% endblock content %}
