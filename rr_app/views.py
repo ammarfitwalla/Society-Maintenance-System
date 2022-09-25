@@ -642,5 +642,6 @@ def get_old_bill(request):
 
 
 def bill_crud_operation(request):
+    print('asdfasdfasdf')
     pass
 
