@@ -215,7 +215,7 @@
     width: calc(100% / 2 - 20px);
   }
 
-  form .input-box span.details {
+  form .input-box label.details {
     display: block;
     font-weight: 500;
     margin-bottom: 5px;
@@ -257,12 +257,10 @@
   }
 
   form .button {
+    text-align: center;
+    padding-top: 8px;
     height: 45px;
-    margin: 35px 0
-  }
-
-  form .button input {
-    height: 100%;
+    margin: 35px 0;
     width: 100%;
     border-radius: 5px;
     border: none;
@@ -275,7 +273,7 @@
     background: linear-gradient(135deg, #CC2973, #4555D2);
   }
 
-  form .button input:hover {
+  form .button:hover {
     /* transform: scale(0.99); */
     background: linear-gradient(-135deg, #CC2973, #4555D2);
   }
@@ -333,9 +331,16 @@
 
 
 <div class="containerx">
-  <div class="title">MASTER ENTRY</div>
+  <div class="title">
+    <div id="divAdd"> 
+      MASTER ENTRY - ADD
+    </div>
+    <div id="divUpdate" hidden="hidden"> 
+      MASTER ENTRY - UPDATE
+    </div> 
+  </div>
   <div class="content">
-    <form method="POST" id="myForm" action="#">
+    <form method="POST" id="masterForm" action="#">
       {% csrf_token %}
       <div class="user-details">
         <div class="input-box">
@@ -348,43 +353,41 @@
           </datalist>
         </div>
         <div class="input-box">
-          <span class="details">Room Number</span>
+          <label for="room_id" class="details">Room Number</label>
           <input id="room_id" type="text" name="room" required />
         </div>
         <div class="input-box">
-          <span class="details">CTS Number</span>
+          <label for="cts_id" class="details">CTS Number</label>
           <input id="cts_id" type="text" name="cts" required />
         </div>
         <div class="input-box">
-          <span class="details">Tenant Name</span>
+          <label for="tenant_id" class="details">Tenant Name</label>
           <input id="tenant_id" type="text" name="tenant_name" required />
         </div>
         <div class="input-box">
-          <span class="details">Tenant Mobile Number</span>
+          <label for="ten_mn" class="details">Tenant Mobile Number</label>
           <input id="ten_mn" type="tel" pattern="[0-9]{10}" name="tenant_mobile_number" />
         </div>
         <div class="input-box">
-          <span class="details">Tenant Date of Death</span>
+          <label for="ten_dod" class="details">Tenant Date of Death</label>
           <input id="ten_dod" type="date" name="tenant_dod" />
         </div>
 
         <div class="input-box" style="width: 100%;">
-          <span class="details">Notes</span>
+          <label for="per_adr" class="details">Notes</label>
           <input id="per_adr" type="text" name="permanent_address" />
         </div>
       </div>
 
       <div class="user-details">
-        <label>Tenant Gender</label>
+        <label for="tenant_gender_male">Tenant Gender</label>
         <input type="radio" style="margin: 3px;" id="tenant_gender_male" name="tenant_gender" value="Male" required>
         <label for="tenant_gender_male">Male</label><br>
         <input type="radio" style="margin: 3px;" id="tenant_gender_female" name="tenant_gender" value="Female" required>
         <label for="tenant_gender_female">Female</label><br>
       </div>
 
-      <div class="button">
-        <input type="submit" value="Submit">
-      </div>
+      <div class="button" onclick="confirmAction()">Submit</div>
     </form>
   </div>
 </div>
@@ -397,9 +400,57 @@
   {% endif %}
 </div>
 <br><br><br><br>
-
+<script src="{% static 'js/scripts.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.9/sweetalert2.all.min.js" integrity="sha512-IZ95TbsPTDl3eT5GwqTJH/14xZ2feLEGJRbII6bRKtE/HC6x3N4cHye7yyikadgAsuiddCY2+6gMntpVHL1gHw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
+
+  function confirmAction() {
+    var Form = document.getElementById('masterForm');
+    if (Form.checkValidity() == false) {
+      var list = Form.querySelectorAll(':invalid');
+      for (var item of list) {
+          item.focus();
+          console.log(item)
+          console.log(item.id)
+          var label_ = Form.querySelector('label[for=' + item.id + ']');
+          console.log(label_)
+
+          Swal.fire(item.validationMessage , label_.textContent, 'info')
+          break;
+      }
+    } else {
+      let t_name = document.getElementById("tenant_id").value
+      Swal.fire({
+        title: "Add New Tenant",
+        text: "Are you sure you want to Add new Tenant '" + t_name + "' ?",
+        icon: 'question',
+        showDenyButton: true,
+        confirmButtonText: 'Yes',
+        denyButtonText: `No`,
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: "New Tenant '" + t_name + "' Added Successfully!",
+            showConfirmButton: false,
+            timer: 1500,
+            icon: 'success',
+          })
+          Form.submit()
+          
+        } else if (result.isDenied) {
+          Swal.fire('New Tenant Add operation is cancelled!', '', 'error')
+        }
+      })
+    }
+  
+
+    
+  }
+
   function updateMaster(t_id) {
+    hideShowDiv("divAdd", "Hide");
+    hideShowDiv("divUpdate", "Show");
     $.post("{% url 'crud_operation' %}",
       {
         csrfmiddlewaretoken: '{{ csrf_token }}',
@@ -407,7 +458,7 @@
       },
       function (data) {
         if (Object.keys(data).length > 1) {
-          document.getElementById("myForm").reset();
+          document.getElementById("masterForm").reset();
           document.getElementById("browser").value = data['house_number'];
           document.getElementById("tenant_id").value = data['tenant_name'];
           document.getElementById("room_id").value = data['room_number'];
@@ -431,3 +482,8 @@
 </script>
 
 {% endblock content %}
+
+<!-- 
+
+  Edit operation msg remaining
+ -->

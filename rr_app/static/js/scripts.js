@@ -103,3 +103,14 @@ function topFunction() {
 	document.body.scrollTop = 0; // for Safari
 	document.documentElement.scrollTop = 0; // for Chrome, Firefox, IE and Opera
 }
+
+// Hide-Show Div Elements
+function hideShowDiv(elementName, hideShow) {
+	let element = document.getElementById(elementName);
+	if (hideShow == "Show") {
+	  element.removeAttribute("hidden");
+	} else {
+	  element.setAttribute("hidden", "hidden");
+	}
+
+}

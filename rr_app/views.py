@@ -566,11 +566,8 @@ def tenant_bill_crud(request):
 
         bill_for_month_of = month_name_to_int(filtered_one_bill_data.bill_for_month_of)
         bill_for_month_of = '2022-09'
-        print(bill_for_month_of)
         rent_for_month_from = month_name_to_int(filtered_one_bill_data.rent_from)
-        print(rent_for_month_from)
         rent_for_month_to = month_name_to_int(filtered_one_bill_data.rent_to)
-        print(rent_for_month_to)
 
         return JsonResponse(
             {

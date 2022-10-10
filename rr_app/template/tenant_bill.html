@@ -98,12 +98,10 @@
   }
 
   form .button {
+    text-align: center;
+    padding-top: 8px;
     height: 45px;
-    margin: 35px 0
-  }
-
-  form .button input {
-    height: 100%;
+    margin: 35px 0;
     width: 100%;
     border-radius: 5px;
     border: none;
@@ -116,7 +114,7 @@
     background: linear-gradient(135deg, #CC2973, #4555D2);
   }
 
-  form .button input:hover {
+  form .button:hover {
     /* transform: scale(0.99); */
     background: linear-gradient(-135deg, #CC2973, #4555D2);
   }
@@ -175,7 +173,14 @@
 
 
 <div class="containerx">
-    <div class="title">BILL ENTRY</div>
+    <div class="title">
+      <div id="divAdd"> 
+        BILL ENTRY - ADD
+      </div>
+      <div id="divUpdate" hidden="hidden"> 
+        BILL ENTRY - UPDATE
+      </div>  
+    </div>
     <div class="content">
         <form method="POST" id="myForm" action="{% url 'tenant_bill' %}">
             {% csrf_token %}
@@ -304,7 +309,7 @@
             <div class="button">
                 <input type="submit" value="Save">
             </div>
-            <div class="button">
+            <div id="printBtn" class="button" hidden="hidden">
                 <input type="submit" value="Print" name="print">
             </div>
         </form>
@@ -369,7 +374,7 @@
         </tbody>
     </table>
 </div>
-
+<script src="{% static 'js/scripts.js' %}"></script>
 
 <script>
     document.getElementById("rate").value = 350;
@@ -498,6 +503,10 @@
   
 
     function updateBill(bill_id) {
+      hideShowDiv('divAdd', "Hide");
+      hideShowDiv('printBtn', "Show");
+      hideShowDiv('divUpdate', "Show");
+
       $.post("{% url 'tenant_bill_crud' %}",
         {
           csrfmiddlewaretoken: '{{ csrf_token }}',
@@ -542,3 +551,22 @@
 </script>
 
 {% endblock content %}
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 
+
+  replace span with label
+  change span css with label 
+  change submit input to only DIV onclick
+  add swal
+ -->
