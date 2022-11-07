@@ -3,315 +3,6 @@
 
 {% block content %}
 
-<!--<style>-->
-<!--    .table {-->
-<!--        width: 85%;-->
-<!--        margin: auto;-->
-<!--    }-->
-
-<!--    thead {-->
-<!--        color: white;-->
-<!--        background: linear-gradient(135deg, #CC2973, #4555D2);-->
-
-<!--    }-->
-
-<!--    th {-->
-<!--        text-align: center;-->
-<!--    }-->
-
-<!--    td {-->
-<!--        text-align: center;-->
-<!--    }-->
-
-<!--    body {-->
-<!--        margin-top: 10%;-->
-<!--        justify-content: center;-->
-<!--        align-items: center;-->
-<!--    }-->
-
-<!--    .containerx {-->
-
-<!--        display: block;-->
-<!--        margin: auto;-->
-<!--        max-width: 700px;-->
-<!--        width: 80%;-->
-<!--        background-color: #fff;-->
-<!--        padding: 25px 30px;-->
-<!--        border-radius: 5px;-->
-<!--        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);-->
-<!--    }-->
-
-<!--    .containerx .title {-->
-<!--        text-align: center;-->
-<!--        font-size: 27px;-->
-<!--        font-weight: bold;-->
-<!--        position: relative;-->
-<!--    }-->
-
-<!--    .content form .user-details {-->
-<!--        display: flex;-->
-<!--        flex-wrap: wrap;-->
-<!--        justify-content: space-between;-->
-<!--        margin: 20px 0 12px 0;-->
-<!--    }-->
-
-<!--    form .user-details .input-box {-->
-<!--        margin-bottom: 15px;-->
-<!--        width: calc(100% / 2 - 20px);-->
-<!--    }-->
-
-<!--    form .input-box span.details {-->
-<!--        display: block;-->
-<!--        font-weight: 500;-->
-<!--        margin-bottom: 5px;-->
-<!--    }-->
-
-<!--    .user-details .input-box input {-->
-<!--        height: 45px;-->
-<!--        width: 100%;-->
-<!--        outline: none;-->
-<!--        font-size: 16px;-->
-<!--        border-radius: 5px;-->
-<!--        padding-left: 15px;-->
-<!--        border: 1px solid #ccc;-->
-<!--        border-bottom-width: 2px;-->
-<!--        transition: all 0.3s ease;-->
-<!--    }-->
-
-<!--    .user-details .input-box input:focus,-->
-<!--    .user-details .input-box input:valid {-->
-<!--        border-color: #9b59b6;-->
-<!--    }-->
-
-<!--    form .gender-details .gender-title {-->
-<!--        font-size: 20px;-->
-<!--        font-weight: 500;-->
-<!--    }-->
-
-<!--    form .category {-->
-<!--        display: flex;-->
-<!--        width: 80%;-->
-<!--        margin: 14px 0;-->
-<!--        justify-content: space-between;-->
-<!--    }-->
-
-<!--    form .category label {-->
-<!--        display: flex;-->
-<!--        align-items: center;-->
-<!--        cursor: pointer;-->
-<!--    }-->
-
-<!--    form .button {-->
-<!--        height: 45px;-->
-<!--        margin: 35px 0-->
-<!--    }-->
-
-<!--    form .button input {-->
-<!--        height: 100%;-->
-<!--        width: 100%;-->
-<!--        border-radius: 5px;-->
-<!--        border: none;-->
-<!--        color: #fff;-->
-<!--        font-size: 18px;-->
-<!--        font-weight: 500;-->
-<!--        letter-spacing: 1px;-->
-<!--        cursor: pointer;-->
-<!--        transition: all 0.3s ease;-->
-<!--        background: linear-gradient(135deg, #CC2973, #4555D2);-->
-<!--    }-->
-
-<!--    form .button input:hover {-->
-<!--        /* transform: scale(0.99); */-->
-<!--        background: linear-gradient(-135deg, #CC2973, #4555D2);-->
-<!--    }-->
-
-<!--    @media(max-width: 584px) {-->
-<!--        .containerx {-->
-<!--            max-width: 100%;-->
-<!--        }-->
-
-<!--        form .user-details .input-box {-->
-<!--            margin-bottom: 15px;-->
-<!--            width: 100%;-->
-<!--        }-->
-
-<!--        form .category {-->
-<!--            width: 100%;-->
-<!--        }-->
-
-<!--        .content form .user-details {-->
-<!--            max-height: 300px;-->
-<!--            overflow-y: scroll;-->
-<!--        }-->
-
-<!--        .user-details::-webkit-scrollbar {-->
-<!--            width: 5px;-->
-<!--        }-->
-<!--    }-->
-
-<!--    @media(max-width: 459px) {-->
-<!--        .containerx .content .category {-->
-<!--            flex-direction: column;-->
-<!--        }-->
-<!--    }-->
-
-<style>
-  .table {
-    width: 70%;
-    margin: auto;
-  }
-
-  thead {
-    color: white;
-    background: linear-gradient(135deg, #CC2973, #4555D2);
-  }
-
-  th {
-    text-align: center;
-    font-family: "Trebuchet MS", Arial, Verdana;
-    font-size: 10px;
-  }
-
-  td {
-    text-align: center;
-    font-family: "Trebuchet MS", Arial, Verdana;
-    font-size: 12px;
-  }
-
-  body {
-    margin-top: 10%;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .containerx {
-
-    display: block;
-    margin: auto;
-    max-width: 700px;
-    width: 80%;
-    background-color: #fff;
-    padding: 25px 30px;
-    border-radius: 5px;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
-  }
-
-  .containerx .title {
-    text-align: center;
-    font-size: 27px;
-    font-weight: bold;
-    position: relative;
-  }
-
-  .content form .user-details {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin: 20px 0 12px 0;
-  }
-
-  form .user-details .input-box {
-    margin-bottom: 15px;
-    width: calc(100% / 2 - 20px);
-  }
-
-  form .input-box label.details {
-    display: block;
-    font-weight: 500;
-    margin-bottom: 5px;
-  }
-
-  .user-details .input-box input {
-    height: 25px;
-    width: 100%;
-    outline: none;
-    font-size: 14px;
-    border-radius: 5px;
-    padding-left: 15px;
-    border: 1px solid #ccc;
-    border-bottom-width: 2px;
-    transition: all 0.3s ease;
-  }
-
-  .user-details .input-box input:focus,
-  .user-details .input-box input:valid {
-    border-color: #9b59b6;
-  }
-
-  form .gender-details .gender-title {
-    font-size: 20px;
-    font-weight: 500;
-  }
-
-  form .category {
-    display: flex;
-    width: 80%;
-    margin: 14px 0;
-    justify-content: space-between;
-  }
-
-  form .category label {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-  }
-
-  form .button {
-    text-align: center;
-    padding-top: 8px;
-    height: 45px;
-    margin: 35px 0;
-    width: 100%;
-    border-radius: 5px;
-    border: none;
-    color: #fff;
-    font-size: 18px;
-    font-weight: 500;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: linear-gradient(135deg, #CC2973, #4555D2);
-  }
-
-  form .button:hover {
-    /* transform: scale(0.99); */
-    background: linear-gradient(-135deg, #CC2973, #4555D2);
-  }
-
-  @media(max-width: 584px) {
-    .containerx {
-      max-width: 100%;
-    }
-
-    form .user-details .input-box {
-      margin-bottom: 15px;
-      width: 100%;
-    }
-
-    form .category {
-      width: 100%;
-    }
-
-    .content form .user-details {
-      max-height: 300px;
-      overflow-y: scroll;
-    }
-
-    .user-details::-webkit-scrollbar {
-      width: 5px;
-    }
-  }
-
-  @media(max-width: 459px) {
-    .containerx .content .category {
-      flex-direction: column;
-    }
-  }
-</style>
-<!--</style>-->
-<!-- {% for i in temp %}
-{{ i }}
-{% endfor %} -->
 <div class="container">
 
   <!-- MESSAGE -->
@@ -327,17 +18,17 @@
   </div>
   {% endfor %}
   {% endif %}
-</div>
+</div><br>
 
 
 <div class="containerx">
   <div class="title">
-    <div id="divAdd"> 
+    <div id="divAdd">
       MASTER ENTRY - ADD
     </div>
-    <div id="divUpdate" hidden="hidden"> 
+    <div id="divUpdate" hidden="hidden">
       MASTER ENTRY - UPDATE
-    </div> 
+    </div>
   </div>
   <div class="content">
     <form method="POST" id="masterForm" action="#">
@@ -400,58 +91,13 @@
   {% endif %}
 </div>
 <br><br><br><br>
-<script src="{% static 'js/scripts.js' %}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.9/sweetalert2.all.min.js" integrity="sha512-IZ95TbsPTDl3eT5GwqTJH/14xZ2feLEGJRbII6bRKtE/HC6x3N4cHye7yyikadgAsuiddCY2+6gMntpVHL1gHw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
 <script>
-
-  function confirmAction() {
-    var Form = document.getElementById('masterForm');
-    if (Form.checkValidity() == false) {
-      var list = Form.querySelectorAll(':invalid');
-      for (var item of list) {
-          item.focus();
-          console.log(item)
-          console.log(item.id)
-          var label_ = Form.querySelector('label[for=' + item.id + ']');
-          console.log(label_)
-
-          Swal.fire(item.validationMessage , label_.textContent, 'info')
-          break;
-      }
-    } else {
-      let t_name = document.getElementById("tenant_id").value
-      Swal.fire({
-        title: "Add New Tenant",
-        text: "Are you sure you want to Add new Tenant '" + t_name + "' ?",
-        icon: 'question',
-        showDenyButton: true,
-        confirmButtonText: 'Yes',
-        denyButtonText: `No`,
-      }).then((result) => {
-        /* Read more about isConfirmed, isDenied below */
-        if (result.isConfirmed) {
-          Swal.fire({
-            title: "New Tenant '" + t_name + "' Added Successfully!",
-            showConfirmButton: false,
-            timer: 1500,
-            icon: 'success',
-          })
-          Form.submit()
-          
-        } else if (result.isDenied) {
-          Swal.fire('New Tenant Add operation is cancelled!', '', 'error')
-        }
-      })
-    }
-  
-
-    
-  }
-
   function updateMaster(t_id) {
     hideShowDiv("divAdd", "Hide");
     hideShowDiv("divUpdate", "Show");
-    $.post("{% url 'crud_operation' %}",
+    $.post("/crud_operation/",
       {
         csrfmiddlewaretoken: '{{ csrf_token }}',
         't_id': t_id,
@@ -475,15 +121,12 @@
         } else {
           alert('Data fetch failed, please refresh the page and try again.');
         }
+        topFunction();
       }
     );
   }
 
 </script>
 
+
 {% endblock content %}
-
-<!-- 
-
-  Edit operation msg remaining
- -->

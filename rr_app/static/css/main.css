@@ -1,0 +1,151 @@
+  .table {
+      width: 70%;
+      margin: auto;
+  }
+
+  thead {
+      color: white;
+      background: linear-gradient(135deg, #CC2973, #4555D2);
+  }
+
+  th {
+      text-align: center;
+      font-family: "Trebuchet MS", Arial, Verdana;
+      font-size: 10px;
+  }
+
+  td {
+      text-align: center;
+      font-family: "Trebuchet MS", Arial, Verdana;
+      font-size: 12px;
+  }
+
+  body {
+      margin-top: 10%;
+      justify-content: center;
+      align-items: center;
+  }
+
+  .containerx {
+
+      display: block;
+      margin: auto;
+      max-width: 700px;
+      width: 80%;
+      background-color: #fff;
+      padding: 25px 30px;
+      border-radius: 5px;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+  }
+
+  .containerx .title {
+      text-align: center;
+      font-size: 27px;
+      font-weight: bold;
+      position: relative;
+  }
+
+  .content form .user-details {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin: 20px 0 12px 0;
+  }
+
+  form .user-details .input-box {
+      margin-bottom: 15px;
+      width: calc(100% / 2 - 20px);
+  }
+
+  form .input-box label.details {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 5px;
+  }
+
+  .user-details .input-box input {
+      height: 25px;
+      width: 100%;
+      outline: none;
+      font-size: 14px;
+      border-radius: 5px;
+      padding-left: 15px;
+      border: 1px solid #ccc;
+      border-bottom-width: 2px;
+      transition: all 0.3s ease;
+  }
+
+  .user-details .input-box input:focus,
+  .user-details .input-box input:valid {
+      border-color: #9b59b6;
+  }
+
+  form .gender-details .gender-title {
+      font-size: 20px;
+      font-weight: 500;
+  }
+
+  form .category {
+      display: flex;
+      width: 80%;
+      margin: 14px 0;
+      justify-content: space-between;
+  }
+
+  form .category label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+  }
+
+  form .button {
+      text-align: center;
+      padding-top: 8px;
+      height: 45px;
+      margin: 35px 0;
+      width: 100%;
+      border-radius: 5px;
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, #CC2973, #4555D2);
+  }
+
+  form .button:hover {
+      /* transform: scale(0.99); */
+      background: linear-gradient(-135deg, #CC2973, #4555D2);
+  }
+
+  @media(max-width: 584px) {
+      .containerx {
+          max-width: 100%;
+      }
+
+      form .user-details .input-box {
+          margin-bottom: 15px;
+          width: 100%;
+      }
+
+      form .category {
+          width: 100%;
+      }
+
+      .content form .user-details {
+          max-height: 300px;
+          overflow-y: scroll;
+      }
+
+      .user-details::-webkit-scrollbar {
+          width: 5px;
+      }
+  }
+
+  @media(max-width: 459px) {
+      .containerx .content .category {
+          flex-direction: column;
+      }
+  }
