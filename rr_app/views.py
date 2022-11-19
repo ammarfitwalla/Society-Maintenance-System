@@ -1,19 +1,20 @@
+import re
 import os
+import cv2
 import calendar
 import subprocess
-import cv2
 import numpy as np
 import pandas as pd
 from PIL import Image
 from rr_app.models import *
 from datetime import datetime
 from django.contrib import messages
+from django.http import HttpResponse
 from django.http import JsonResponse
 from rr_project.settings import MEDIA_ROOT
 from django.shortcuts import render, redirect
 from django.views.decorators.cache import cache_control
 from django.contrib.humanize.templatetags.humanize import ordinal
-from django.http import HttpResponse
 
 
 def check_dir_exists(path):
@@ -139,7 +140,6 @@ def master(request):
                 tenant_dod = tenant_data['tenant_dod'].strftime("%d-%m-%Y")
             else:
                 tenant_dod = None
-
             master_values.append([all_house_number['house_number'], all_room_number['room_number'], all_cts_number['cts_number'], tenant_data['tenant_name'], tenant_dod, tenant_data['tenant_gender'], str(tenant_data['tenant_mobile_number']), tenant_data['tenant_permanent_address'], '<a href=' + '"' + 'javascript:updateMaster(' + str(tenant_data['id']) + ');">Edit</a>'])
 
     """
@@ -152,7 +152,6 @@ def master(request):
     master_df = master_df.to_html(index_names=False, index=False, classes="table table-bordered table-sm table-responsive-sm table-hover", escape=False, render_links=True)
     if inserted:
         return redirect('/master/')
-
     context = {'master_df': master_df, 'temp': temp}
     return render(request, 'master.html', context)
 
@@ -220,11 +219,15 @@ def tenant_bill(request):
 
             if print_button and print_button != "":
                 # TODO: check if data is present in db, if not, ask user to save first
+                bill_house_number_dir = re.sub('[^A-Za-z0-9]+', '_', str(bill_house_number))
+                bill_cts_number_dir = re.sub('[^A-Za-z0-9]+', '_', str(bill_cts_number))
+                bill_room_number_dir = re.sub('[^A-Za-z0-9]+', '_', str(bill_room_number))
+                tenant_name_dir = re.sub('[^A-Za-z0-9]+', '_',  str(get_tenant_attrs['tenant_name']))
 
-                check_dir_exists(os.path.join(MEDIA_ROOT, bill_house_number))
-                check_dir_exists(os.path.join(MEDIA_ROOT, bill_house_number, bill_cts_number))
-                check_dir_exists(os.path.join(MEDIA_ROOT, bill_house_number, bill_cts_number, bill_room_number))
-                check_dir_exists(os.path.join(MEDIA_ROOT, bill_house_number, bill_cts_number, bill_room_number, get_tenant_attrs['tenant_name']))
+                check_dir_exists(os.path.join(MEDIA_ROOT, bill_house_number_dir))
+                check_dir_exists(os.path.join(MEDIA_ROOT, bill_house_number_dir, bill_cts_number_dir))
+                check_dir_exists(os.path.join(MEDIA_ROOT, bill_house_number_dir, bill_cts_number_dir, bill_room_number_dir))
+                check_dir_exists(os.path.join(MEDIA_ROOT, bill_house_number_dir, bill_cts_number_dir, bill_room_number_dir, tenant_name_dir))
 
                 today = datetime.today()
                 day = '{:02d}'.format(today.day)
@@ -265,10 +268,10 @@ def tenant_bill(request):
                     a5im.paste(im, im.getbbox())
 
                     if i == 0:
-                        pdf_name = os.path.join(MEDIA_ROOT, bill_house_number, bill_cts_number, bill_room_number, get_tenant_attrs['tenant_name'], rent_for_month_from_long + "-to-" + rent_for_month_to_long + ".pdf")
+                        pdf_name = os.path.join(MEDIA_ROOT, bill_house_number_dir, bill_cts_number_dir, bill_room_number_dir,tenant_name_dir, rent_for_month_from_long + "-to-" + rent_for_month_to_long + ".pdf")
                         a5im.save(pdf_name, 'PDF', quality=100)
                     else:
-                        pdf_name = os.path.join(MEDIA_ROOT, bill_house_number, bill_cts_number, bill_room_number, get_tenant_attrs['tenant_name'], rent_for_month_from_long + "-to-" + rent_for_month_to_long + "_blank.pdf")
+                        pdf_name = os.path.join(MEDIA_ROOT, bill_house_number_dir, bill_cts_number_dir, bill_room_number_dir, tenant_name_dir, rent_for_month_from_long + "-to-" + rent_for_month_to_long + "_blank.pdf")
                         a5im.save(pdf_name, 'PDF', quality=100)
                         subprocess.Popen([pdf_name], shell=True)
                 messages.success(request, "Bill '" + bill_number + "' Printed & Updated Successfully!")
@@ -284,7 +287,13 @@ def tenant_bill(request):
     request.session['bill_id'] = 'new'
     all_bill_data = Bill.objects.all()
     house_ = list(HouseNumber.objects.all().values_list('house_number', flat=True))
-    context = {'house_': house_, 'all_bill_data': all_bill_data}
+    if all_bill_data:
+        last_bill_number = 1 if int(all_bill_data.last().bill_number) == 100 else int(all_bill_data.last().bill_number) + 1
+        last_book_number = int(all_bill_data.last().book_number) + 1 if last_bill_number == 1 else all_bill_data.last().book_number
+    else:
+        last_bill_number = 1
+        last_book_number = 1
+    context = {'house_': house_, 'all_bill_data': all_bill_data, 'last_book_number': last_book_number, 'last_bill_number': last_bill_number}
     return render(request, 'tenant_bill.html', context)
 
 
@@ -315,6 +324,13 @@ def name_room_list(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def get_old_bill(request):
+    # all_bill_data = Bill.objects.all()
+    # if all_bill_data:
+    #     last_bill_number = 1 if int(all_bill_data.last().bill_number) == 100 else int(all_bill_data.last().bill_number) + 1
+    #     last_book_number = int(all_bill_data.last().book_number) + 1 if last_bill_number == 1 else all_bill_data.last().book_number
+    # else:
+    #     last_bill_number = 1
+    #     last_book_number = 1
     print('=======', request.POST['room'])
     old_bill = Bill.objects.filter(house_number=request.POST['house_num'], room_number=request.POST['room']).order_by('-id')
 

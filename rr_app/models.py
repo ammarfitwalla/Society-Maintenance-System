@@ -41,7 +41,7 @@ class TenantAttributes(models.Model):
     tenant_mobile_number = models.IntegerField(null=True, blank=True)
     tenant_dod = models.DateField(null=True, blank=True)
     tenant_gender = models.CharField(max_length=255, null=False)
-    created_at = models.DateField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.tenant_name)
@@ -69,7 +69,7 @@ class Bill(models.Model):
     extra_payment = models.IntegerField(null=True, blank=True)
     agreement_date = models.DateField(blank=True, null=True)
     notes = models.CharField(max_length=1020, null=False)
-    created_at = models.DateField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.bill_number)
