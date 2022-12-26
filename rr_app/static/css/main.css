@@ -1,5 +1,5 @@
   .table {
-      width: 70%;
+      width: 90%;
       margin: auto;
   }
 
@@ -10,14 +10,14 @@
 
   th {
       text-align: center;
-      font-family: "Trebuchet MS", Arial, Verdana;
-      font-size: 10px;
+      font-family: "Helvetica", Arial, Verdana;
+      font-size: 14px;
   }
 
   td {
       text-align: center;
-      font-family: "Trebuchet MS", Arial, Verdana;
-      font-size: 12px;
+      font-family: "Helvetica", Arial, Verdana;
+      font-size: 15px;
   }
 
   body {
@@ -30,7 +30,7 @@
 
       display: block;
       margin: auto;
-      max-width: 700px;
+      max-width: 750px;
       width: 100%;
       background-color: #fff;
       padding: 25px 30px;

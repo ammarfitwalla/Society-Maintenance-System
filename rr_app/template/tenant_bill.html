@@ -49,12 +49,12 @@
 
                 <div id="room_id" class="input-box">
                     <label for="room_num" class="details">Room Number</label>
-                    <input id='room_num' type="text" name="room"/>
+                    <input id='room_num' type="text" name="room" readonly="readonly"/>
                 </div>
 
                 <div id="cts_id" class="input-box">
                     <label for="cts_num" class="details">CTS Number</label>
-                    <input id='cts_num' type="text" name="cts" value="{{mob_num}}"/>
+                    <input id='cts_num' type="text" name="cts" value="{{mob_num}}" readonly="readonly"/>
                 </div>
 
                 <div class="input-box" style="width:100%;">
@@ -73,15 +73,17 @@
                 <div class="input-box">
                     <label for="bill_number" class="details">Bill Number</label>
                     <!--            <input id="bill_number" type="text" name="bill_number" required />-->
-                    <input id="bill_number" type="text" name="bill_number" value="{{last_bill_number}}"
-                           readonly="readonly"/>
+<!--                    <input id="bill_number" type="text" name="bill_number" value="{{last_bill_number}}"-->
+<!--                           readonly="readonly"/>-->
+                    <input id="bill_number" type="text" name="bill_number"/>
                 </div>
 
                 <div class="input-box">
                     <label for="book_number" class="details">Book Number</label>
                     <!--            <input id="book_number" type="text" name="book_number" required />-->
-                    <input id="book_number" type="text" name="book_number" value="{{last_book_number}}"
-                           readonly="readonly"/>
+<!--                    <input id="book_number" type="text" name="book_number" value="{{last_book_number}}"-->
+<!--                           readonly="readonly"/>-->
+                    <input id="book_number" type="text" name="book_number"/>
                 </div>
 
                 <div class="input-box">
@@ -106,12 +108,12 @@
 
                 <div id="total_months" class="input-box">
                     <label for="tm" class="details">Total Months </label>
-                    <input id="tm" onchange="multiplyMonth()" type="text" name="total_months"/>
+                    <input id="tm" onchange="multiplyMonth()" type="text" name="total_months" readonly="readonly"/>
                 </div>
 
                 <div id="total_rupees" class="input-box">
                     <label for="tr" class="details">Total Rupees </label>
-                    <input id="tr" type="text" name="total_rupees"/>
+                    <input id="tr" type="text" name="total_rupees" readonly="readonly"/>
                 </div>
 
                 <div class="input-box">
@@ -131,12 +133,12 @@
 
                 <div id="ten_mn" class="input-box">
                     <label for="mob_num" class="details">Tenant Mobile Number</label>
-                    <input id="mob_num" type="tel" pattern="[0-9]{10}" name="tenant_mobile_number"/>
+                    <input id="mob_num" type="tel" pattern="[0-9]{10}" name="tenant_mobile_number" readonly="readonly"/>
                 </div>
 
                 <div id="ten_dod" class="input-box">
                     <label for="date" class="details">Tenant Date of Death</label>
-                    <input id="date" type="date" name="tenant_dod"/>
+                    <input id="date" type="date" name="tenant_dod" readonly="readonly"/>
                 </div>
 
                 <div class="input-box" style="width: 100%;">
