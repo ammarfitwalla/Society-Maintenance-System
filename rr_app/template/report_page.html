@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+
+    <!-- MESSAGE -->
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert {{message.tags}} alert-dismissible fade show mb-0" role="alert">
+        <strong>
+            {{message}}
+        </strong>
+        <!--        <button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
+        <!--            <span aria-hidden="true">&times;</span>-->
+        <!--        </button>-->
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+<br>
+
+
+<div class="containerx">
+    <div class="title">
+        <div>
+            REPORT
+        </div>
+    </div>
+    <div class="content">
+        <form method="POST" id="reportForm">
+            {% csrf_token %}
+            <div class="user-details">
+                <div class="input-box">
+                    <label for="from_month" class="details">From Date</label>
+                    <input id="from_month" type="date" name="from_month" value="{{from_date}}" required/>
+                </div>
+
+                <div class="input-box">
+                    <label for="to_month" class="details">To Date</label>
+                    <input id="to_month" type="date" name="to_month" required value="{{to_date}}"/>
+                </div>
+
+                <div class="input-box" id="div_house_id" data-room-url="{% url 'ajax_load_room_numbers' %}">
+                    <label for="house" class="details">House Number</label>
+
+                    <select name="house" id="house" style="width:100%;">
+                        <option value="">Select House Number</option>
+                        {% for i in house_ %}
+                        <option value="{{ i.id }}">{{i}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="input-box" id="div_room_id" data-cts-url="{% url 'ajax_load_cts_numbers' %}">
+                    <label for="room" class="details">Room Number</label>
+                    <select name="room" id="room">
+                        <option value="">Select Room Number</option>
+                    </select>
+                </div>
+
+                <div class="input-box">
+                    <label for="cts" class="details">CTS Number</label>
+                    <input type="text" name="cts" id="cts" value="" readonly="readonly">
+                </div>
+                <button class="button" type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<br>
+
+<!--<div class="containerx" style="width:100%; margin:auto;">-->
+    <div class="content">
+
+        <table border="1" class="dataframe table table-bordered table-sm table-responsive-sm table-hover">
+            <thead>
+            <tr style="text-align: right;">
+                <th>Total Tenants</th>
+                <th>Total Months</th>
+                <th>Total Amount</th>
+                <th>Total Extra Amount</th>
+                <th>Grand Total Amount</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{total_tenants}}</td>
+                <td>{{total_months}}</td>
+                <td>{{total_amounts}}</td>
+                <td>{{total_extra_amounts}}</td>
+                <td>{{grand_total}}</td>
+            </tr>
+            </tbody>
+
+        </table>
+        <table border="1" class="dataframe table table-bordered table-sm table-responsive-sm table-hover">
+
+            <thead>
+            <tr style="text-align: right;">
+                <th>House No.</th>
+                <th>Room No.</th>
+                <th>CTS No.</th>
+                <th>Name</th>
+                <th>Rent from-to</th>
+                <th>Bill for month of</th>
+                <th>Book No.</th>
+                <th>Bill No.</th>
+                <th>Total Month</th>
+                <th>@</th>
+                <th>Total Amount</th>
+                <th>Extra Payment</th>
+                <th>Purpose</th>
+                <th>Agreement Date</th>
+                <th>Notes</th>
+                <th>Mobile No.</th>
+                <th>DOD</th>
+                <!--            <th>Gender</th>-->
+                <th>Received Date</th>
+                <th>Bill ID</th>
+                <!--          <th>Update</th>-->
+            </tr>
+            </thead>
+            <tbody>
+            {% for bill in bill_table_data %}
+            <tr>
+                <td>{{bill.house_number}}</td>
+                <td>{{bill.room_number}}</td>
+                <td>{{bill.cts_number}}</td>
+                <td>{{bill.tenant_name}}</td>
+                <td>{{bill.rent_from}} -to- {{bill.rent_to}}</td>
+                <td>{{bill.bill_for_month_of}}</td>
+                <td>{{bill.book_number}}</td>
+                <td>{{bill.bill_number}}</td>
+                <td>{{bill.total_months}}</td>
+                <td>{{bill.at_the_rate_of}}</td>
+                <td>{{bill.total_rupees}}</td>
+                <td>{{bill.extra_payment}}</td>
+                <td>{{bill.purpose_for}}</td>
+                <td>{{bill.agreement_date}}</td>
+                <td>{{bill.notes}}</td>
+                <td>{{bill.tenant_mobile_number}}</td>
+                <td>{{bill.tenant_dod}}</td>
+                <!--                        <td>{{bill.tenant_gender}}</td>-->
+                <td>{{bill.received_date}}</td>
+                <td>{{bill.id}}</td>
+                <!--          <td><a href="javascript:updateBill({{bill.id}});">Update</a></td>-->
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+<!--</div>-->
+
+<script>
+    $(document).ready(function () {
+    $('#house,#room,#cts').select2();
+});
+
+
+</script>
+
+<script>
+
+// -----------  To display dependent room number based on user-selected house number ----------- //
+    $("#house").change(function () {
+      var url = $("#div_house_id").attr("data-room-url");
+      var houseId = $(this).val();
+      $.ajax({
+        url: url,
+        data: {
+          'house': houseId
+        },
+        success: function (data) {
+          $("#room").html(data);
+        }
+      });
+    });
+
+//  ----------- To display dependent room number based on user-selected house number ----------- //
+    $("#room").change(function () {
+      var url = $("#div_room_id").attr("data-cts-url");
+      var room_houseId = $("#house").val();
+      var roomNumberId = $("#room").val();
+      $.ajax({
+        url: url,
+        data: {
+          'house': room_houseId,
+          'room_number': roomNumberId
+        },
+        success: function (data) {
+          $("#cts").val(data);
+        }
+      });
+    });
+
+
+
+
+
+</script>
+
+
+{% endblock content %}

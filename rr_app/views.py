@@ -7,7 +7,9 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 from rr_app.models import *
+from win32 import win32print
 from datetime import datetime
+from django.db.models import Sum
 from django.contrib import messages
 from django.http import HttpResponse
 from django.http import JsonResponse
@@ -15,6 +17,18 @@ from rr_project.settings import MEDIA_ROOT
 from django.shortcuts import render, redirect
 from django.views.decorators.cache import cache_control
 from django.contrib.humanize.templatetags.humanize import ordinal
+
+GHOSTSCRIPT_PATH = r"C:\Program Files\gs\gs10.00.0\bin\gswin64.exe"
+
+default_printer = win32print.GetDefaultPrinter()
+
+args = f'"{GHOSTSCRIPT_PATH}" ' \
+       '-sDEVICE=mswinpr2 ' \
+       '-dBATCH ' \
+       '-dNOPAUSE ' \
+       '-dFitPage ' \
+       '"-dNOPROMPT"' \
+       f'-sOutputFile="%printer%{default_printer}"'
 
 
 def check_dir_exists(path):
@@ -206,23 +220,20 @@ def tenant_bill(request):
         bill_for_month_of_short = num_date_to_string(bill_for_month_of)
         rent_for_month_from_short = num_date_to_string(rent_for_month_from)
         rent_for_month_to_short = num_date_to_string(rent_for_month_to)
+
         get_house_id = HouseNumber.objects.get(house_number=bill_house_number)
-        get_cts_id = CTSNumber.objects.get(house=get_house_id, cts_number=bill_cts_number)
-        get_room_number = (RoomNumber.objects.filter(house=get_house_id, cts=get_cts_id, room_number=bill_room_number).values()[0])
-        get_tenant_attrs = (TenantAttributes.objects.filter(room=get_room_number['id']).values())[0]
+        get_cts_id = CTSNumber.objects.get(house=get_house_id.id, cts_number=bill_cts_number)
+        get_room_number_id = RoomNumber.objects.filter(house=get_house_id.id, cts=get_cts_id.id).values()[0]
+        get_tenant_attrs = (TenantAttributes.objects.filter(room=get_room_number_id['id']).values())[0]
 
-        print("request.session[]=====", request.session['bill_id'])
         if request.session['bill_crud'] == 'Edit':
-            # print(request.session['bill_id'])
-
             Bill.objects.filter(id=request.session['bill_id']).update(house_number=bill_house_number, cts_number=bill_cts_number, room_number=bill_room_number, tenant_name=get_tenant_attrs['tenant_name'], tenant_permanent_address=get_tenant_attrs['tenant_permanent_address'], tenant_mobile_number=get_tenant_attrs['tenant_mobile_number'], tenant_dod=get_tenant_attrs['tenant_dod'], tenant_gender=get_tenant_attrs['tenant_gender'], bill_for_month_of=bill_for_month_of_short, book_number=bill_book_number, bill_number=bill_number, purpose_for=purpose_for, rent_from=rent_for_month_from_short, rent_to=rent_for_month_to_short, at_the_rate_of=at_the_rate_of, total_months=total_months, total_rupees=total_rupees, received_date=received_date, extra_payment=extra_payment, agreement_date=agreement_date, notes=notes)
-
             if print_button and print_button != "":
                 # TODO: check if data is present in db, if not, ask user to save first
                 bill_house_number_dir = re.sub('[^A-Za-z0-9]+', '_', str(bill_house_number))
                 bill_cts_number_dir = re.sub('[^A-Za-z0-9]+', '_', str(bill_cts_number))
                 bill_room_number_dir = re.sub('[^A-Za-z0-9]+', '_', str(bill_room_number))
-                tenant_name_dir = re.sub('[^A-Za-z0-9]+', '_',  str(get_tenant_attrs['tenant_name']))
+                tenant_name_dir = re.sub('[^A-Za-z0-9]+', '_', str(get_tenant_attrs['tenant_name']))
 
                 check_dir_exists(os.path.join(MEDIA_ROOT, bill_house_number_dir))
                 check_dir_exists(os.path.join(MEDIA_ROOT, bill_house_number_dir, bill_cts_number_dir))
@@ -268,24 +279,28 @@ def tenant_bill(request):
                     a5im.paste(im, im.getbbox())
 
                     if i == 0:
-                        pdf_name = os.path.join(MEDIA_ROOT, bill_house_number_dir, bill_cts_number_dir, bill_room_number_dir,tenant_name_dir, rent_for_month_from_long + "-to-" + rent_for_month_to_long + ".pdf")
+                        pdf_name = os.path.join(MEDIA_ROOT, bill_house_number_dir, bill_cts_number_dir, bill_room_number_dir, tenant_name_dir, rent_for_month_from_long + "-to-" + rent_for_month_to_long + ".pdf")
                         a5im.save(pdf_name, 'PDF', quality=100)
                     else:
                         pdf_name = os.path.join(MEDIA_ROOT, bill_house_number_dir, bill_cts_number_dir, bill_room_number_dir, tenant_name_dir, rent_for_month_from_long + "-to-" + rent_for_month_to_long + "_blank.pdf")
                         a5im.save(pdf_name, 'PDF', quality=100)
-                        subprocess.Popen([pdf_name], shell=True)
+                        subprocess.Popen([pdf_name], shell=True)  # Uncomment to open the pdf automatically
+                        ghostscript = args + os.path.join(os.getcwd(), pdf_name).replace('\\', '\\\\')
+                        subprocess.call(ghostscript, shell=True)
                 messages.success(request, "Bill '" + bill_number + "' Printed & Updated Successfully!")
             else:
                 messages.success(request, "Bill '" + bill_number + "' Updated Successfully!")
         else:
             # TODO: Check if data is present in db, if present, return message saying data already exists
+            print("bill_room_number", bill_room_number)
             save_bill_details = Bill(house_number=bill_house_number, cts_number=bill_cts_number, room_number=bill_room_number, tenant_name=get_tenant_attrs['tenant_name'], tenant_permanent_address=get_tenant_attrs['tenant_permanent_address'], tenant_mobile_number=get_tenant_attrs['tenant_mobile_number'], tenant_dod=get_tenant_attrs['tenant_dod'], tenant_gender=get_tenant_attrs['tenant_gender'], bill_for_month_of=bill_for_month_of_short, book_number=bill_book_number, bill_number=bill_number, purpose_for=purpose_for, rent_from=rent_for_month_from_short, rent_to=rent_for_month_to_short, at_the_rate_of=at_the_rate_of, total_months=total_months, total_rupees=total_rupees, received_date=received_date, extra_payment=extra_payment, agreement_date=agreement_date, notes=notes)
             save_bill_details.save()
             messages.success(request, "New Bill '" + bill_number + "' Added Successfully!")
         return redirect('/tenant_bill/')
+
     request.session['bill_crud'] = 'Add'
     request.session['bill_id'] = 'new'
-    all_bill_data = Bill.objects.all()
+    all_bill_data = Bill.objects.all().order_by('-id')
     house_ = list(HouseNumber.objects.all().values_list('house_number', flat=True))
     if all_bill_data:
         last_bill_number = 1 if int(all_bill_data.last().bill_number) == 100 else int(all_bill_data.last().bill_number) + 1
@@ -354,3 +369,87 @@ def get_old_bill(request):
 def bill_crud_operation(request):
     print('asdfasdfasdf')
     pass
+
+
+def report_page(request):
+    if request.method == 'POST':
+        house_object = HouseNumber.objects.all()
+        total_tenants = total_months = total_amounts = total_extra_amounts = grand_total = "N/A"
+        from_month = request.POST.get('from_month')
+        to_month = request.POST.get('to_month')
+        house_id = request.POST.get('house')
+        room_id = request.POST.get('room')
+        # cts = request.POST.get('cts')
+        house = room = ""
+        print("house_id", "room_id")
+        print(house_id, room_id)
+
+        if house_id and room_id:
+            house_dict = (HouseNumber.objects.filter(id=house_id).values())[0]
+            house = house_dict['house_number']
+            room_dict = (RoomNumber.objects.filter(id=room_id, house_id=house_id).values())[0]
+            room = room_dict['room_number']
+            filtered_bill_data = Bill.objects.filter(received_date__range=(from_month, to_month), house_number=house, room_number=room)
+        elif house_id:
+            house_dict = (HouseNumber.objects.filter(id=house_id).values())[0]
+            house = house_dict['house_number']
+            filtered_bill_data = Bill.objects.filter(received_date__range=(from_month, to_month), house_number=house)
+        elif room_id:
+            room_dict = (RoomNumber.objects.filter(id=room_id, house_id=house_id).values())[0]
+            room = room_dict['room_number']
+            filtered_bill_data = Bill.objects.filter(received_date__range=(from_month, to_month), room_number=room)
+        else:
+            filtered_bill_data = Bill.objects.filter(received_date__range=(from_month, to_month))
+        if filtered_bill_data:
+            total_tenants = filtered_bill_data.count()
+            total_months = filtered_bill_data.aggregate(Sum('total_months'))['total_months__sum']
+            total_amounts = filtered_bill_data.aggregate(Sum('total_rupees'))['total_rupees__sum']
+            total_extra_amounts = filtered_bill_data.aggregate(Sum('extra_payment'))['extra_payment__sum']
+            grand_total = int(total_amounts) + int(total_extra_amounts)
+        else:
+            messages.error(request, 'No data available for selected dates!')
+            context = {'house_': house_object, 'house_number_id': house_id,
+                       'total_tenants': total_tenants, 'total_months': total_months,
+                       'total_amounts': total_amounts, 'total_extra_amounts': total_extra_amounts,
+                       'grand_total': grand_total, 'from_date': from_month, 'to_date': to_month,
+                       'house_number': house}
+            return render(request, 'report_page.html', context)
+
+        context = {'house_': house_object, 'bill_table_data': filtered_bill_data,
+                   'total_tenants': total_tenants, 'total_months': total_months,
+                   'total_amounts': total_amounts, 'total_extra_amounts': total_extra_amounts,
+                   'grand_total': grand_total, 'from_date': from_month, 'to_date': to_month,
+                   'house_number': house, 'house_number_id': house_id, 'room_number': room}
+        return render(request, 'report_page.html', context)
+
+    house_ = HouseNumber.objects.all()
+    total_tenants = total_months = total_amounts = total_extra_amounts = grand_total = "N/A"
+    context = {'house_': house_, 'total_tenants': total_tenants, 'total_months': total_months,
+                   'total_amounts': total_amounts, 'total_extra_amounts': total_extra_amounts,
+                   'grand_total': grand_total}
+    return render(request, 'report_page.html', context)
+
+
+def load_room_numbers(request):
+    house_id = request.GET.get('house')
+    all_room_numbers_by_house = RoomNumber.objects.filter(house_id=house_id).order_by('room_number')
+    return render(request, 'room_number_dropdown.html', {'all_room_numbers_by_house': all_room_numbers_by_house})
+
+
+def load_cts_numbers(request):
+    house_id = request.GET.get('house')
+    selected_room_number_id = request.GET.get('room_number')
+    # all_room_numbers_by_house = RoomNumber.objects.filter(house_id=house_id, room_number=selected_room_number).order_by('room_number')
+    cts_number_id_by_house_room = list(RoomNumber.objects.filter(house_id=house_id, id=selected_room_number_id).values_list('cts_id', flat=True))
+    cts_number_by_id = (CTSNumber.objects.filter(house_id=house_id, id=cts_number_id_by_house_room[0]).values())[0]
+    cts_number_by_id = cts_number_by_id['cts_number']
+    return render(request, 'cts_number_dropdown.html', {'all_cts_numbers_by_house': cts_number_by_id})
+
+# def load_tenant_name(request):
+#     house_id = request.GET.get('house')
+#     selected_room_number_id = request.GET.get('room_number')
+#     # all_room_numbers_by_house = RoomNumber.objects.filter(house_id=house_id, room_number=selected_room_number).order_by('room_number')
+#     cts_number_id_by_house_room = list(RoomNumber.objects.filter(house_id=house_id, id=selected_room_number_id).values_list('cts_id', flat=True))
+#     cts_number_by_id = (CTSNumber.objects.filter(house_id=house_id, id=cts_number_id_by_house_room[0]).values())[0]
+#     cts_number_by_id = cts_number_by_id['cts_number']
+#     return render(request, 'cts_number_dropdown.html', {'all_cts_numbers_by_house': cts_number_by_id})

@@ -4,210 +4,214 @@
 {% block content %}
 
 <body>
-  <div class="container">
+<div class="container">
 
     <!-- MESSAGE -->
     {% if messages %}
     {% for message in messages %}
     <div class="alert {{message.tags}} alert-dismissible fade show mb-0" role="alert">
-      <strong>
-        {{message}}
-      </strong>
-      <!--        <button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
-      <!--            <span aria-hidden="true">&times;</span>-->
-      <!--        </button>-->
+        <strong>
+            {{message}}
+        </strong>
+        <!--        <button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
+        <!--            <span aria-hidden="true">&times;</span>-->
+        <!--        </button>-->
     </div>
     {% endfor %}
     {% endif %}
-  </div><br>
+</div>
+<br>
 
 
-  <div class="containerx">
+<div class="containerx">
     <div class="title">
-      <div id="divAdd">
-        BILL ENTRY - ADD
-      </div>
-      <div id="divUpdate" hidden="hidden">
-        BILL ENTRY - UPDATE
-      </div>
+        <div id="divAdd">
+            BILL ENTRY - ADD
+        </div>
+        <div id="divUpdate" hidden="hidden">
+            BILL ENTRY - UPDATE
+        </div>
     </div>
     <div class="content">
-      <form method="POST" id="billForm" action="{% url 'tenant_bill' %}">
-        {% csrf_token %}
-        <div class="user-details">
+        <form method="POST" id="billForm" action="{% url 'tenant_bill' %}">
+            {% csrf_token %}
+            <div class="user-details">
 
-          <div class="input-box">
-            <label for="browser">House Number</label>
-            <input onchange="getTenantList()" list="browsers" name="house" id="browser" required>
-            <datalist id="browsers">
-              {% for i in house_ %}
-              <option value="{{ i }}">
-                {% endfor %}
-            </datalist>
-          </div>
+                <div class="input-box">
+                    <label for="browser">House Number</label>
+                    <input onchange="getTenantList()" list="browsers" name="house" id="browser" required>
+                    <datalist id="browsers">
+                        {% for i in house_ %}
+                        <option value="{{ i }}">
+                            {% endfor %}
+                    </datalist>
+                </div>
 
-          <div class="input-box">
-            <label for="browser1">Tenant Name</label>
-            <input onchange="get_bill(event)" list="browsers1" name="room" id="browser1" required>
-            <!-- <input onchange="getAllData()" list="browsers1" name="room" id="browser1" required> -->
-            <datalist id="browsers1">
-            </datalist>
-          </div>
+                <div id="room_id" class="input-box">
+                    <label for="room_num" class="details">Room Number</label>
+                    <input id='room_num' type="text" name="room"/>
+                </div>
 
-          <div id="room_id" class="input-box">
-            <label for="room_num" class="details">Room Number</label>
-            <input id='room_num' type="text" name="room"/>
-          </div>
-          
-          <div id="cts_id" class="input-box">
-            <label for="cts_num" class="details">CTS Number</label>
-            <input id='cts_num' type="text" name="cts" value="{{mob_num}}" />
-          </div>
+                <div id="cts_id" class="input-box">
+                    <label for="cts_num" class="details">CTS Number</label>
+                    <input id='cts_num' type="text" name="cts" value="{{mob_num}}"/>
+                </div>
 
-          <div id="ten_mn" class="input-box">
-            <label for="mob_num" class="details">Tenant Mobile Number</label>
-            <input id="mob_num" type="tel" pattern="[0-9]{10}" name="tenant_mobile_number" />
-          </div>
+                <div class="input-box" style="width:100%;">
+                    <label for="browser1">Tenant Name</label>
+                    <input onchange="get_bill(event)" list="browsers1" name="tenant_name" id="browser1" required>
+                    <!-- <input onchange="getAllData()" list="browsers1" name="room" id="browser1" required> -->
+                    <datalist id="browsers1">
+                    </datalist>
+                </div>
 
-          <div id="ten_dod" class="input-box">
-            <label for="date" class="details">Tenant Date of Death</label>
-            <input id="date" type="date" name="tenant_dod" />
-          </div>
+                <div class="input-box">
+                    <label for="bill_for_month_of" class="details">Bill for month of</label>
+                    <input id="bill_for_month_of" type="month" name="bill_for_month_of"/>
+                </div>
 
-          <div class="input-box">
-            <label for="bill_for_month_of" class="details">Bill for month of</label>
-            <input id="bill_for_month_of" type="month" name="bill_for_month_of" />
-          </div>
+                <div class="input-box">
+                    <label for="bill_number" class="details">Bill Number</label>
+                    <!--            <input id="bill_number" type="text" name="bill_number" required />-->
+                    <input id="bill_number" type="text" name="bill_number" value="{{last_bill_number}}"
+                           readonly="readonly"/>
+                </div>
 
-          <div class="input-box">
-            <label for="book_number" class="details">Book Number</label>
-            <input id="book_number" type="text" name="book_number" required />
-          </div>
+                <div class="input-box">
+                    <label for="book_number" class="details">Book Number</label>
+                    <!--            <input id="book_number" type="text" name="book_number" required />-->
+                    <input id="book_number" type="text" name="book_number" value="{{last_book_number}}"
+                           readonly="readonly"/>
+                </div>
 
-          <div class="input-box">
-            <label for="bill_number" class="details">Bill Number</label>
-            <input id="bill_number" type="text" name="bill_number" required />
-          </div>
+                <div class="input-box">
+                    <label for="purpose_for" class="details">Purpose For</label>
+                    <input id="purpose_for" type="text" name="purpose_for" required value="For Residence"/>
+                </div>
 
-          <div class="input-box">
-            <label for="purpose_for" class="details">Purpose For</label>
-            <input id="purpose_for" type="text" name="purpose_for" required value="For Residence" />
-          </div>
+                <div id="rent_for_month_from" class="input-box">
+                    <label for="from_date" class="details">Rent for month of/from</label>
+                    <input id="from_date" onchange="monthDiff()" type="month" name="rent_for_month_from" required/>
+                </div>
 
-          <div id="rent_for_month_from" class="input-box">
-            <label for="from_date" class="details">Rent for month of/from</label>
-            <input id="from_date" onchange="monthDiff()" type="month" name="rent_for_month_from" required />
-          </div>
+                <div id="rent_for_month_to" class="input-box">
+                    <label for="to_date" class="details">Rent for month to</label>
+                    <input id="to_date" onchange="monthDiff()" type="month" name="rent_for_month_to" required/>
+                </div>
 
-          <div id="rent_for_month_to" class="input-box">
-            <label for="to_date" class="details">Rent for month to</label>
-            <input id="to_date" onchange="monthDiff()" type="month" name="rent_for_month_to" required />
-          </div>
+                <div id="at_the_rate_of" class="input-box">
+                    <label for="rate" class="details">@ </label>
+                    <input id="rate" onchange="multiplyMonth()" type="text" name="at_the_rate_of" required/>
+                </div>
 
+                <div id="total_months" class="input-box">
+                    <label for="tm" class="details">Total Months </label>
+                    <input id="tm" onchange="multiplyMonth()" type="text" name="total_months"/>
+                </div>
 
-          <div id="at_the_rate_of" class="input-box">
-            <label for="rate" class="details">@ </label>
-            <input id="rate" onchange="multiplyMonth()" type="text" name="at_the_rate_of" required />
-          </div>
+                <div id="total_rupees" class="input-box">
+                    <label for="tr" class="details">Total Rupees </label>
+                    <input id="tr" type="text" name="total_rupees"/>
+                </div>
 
-          <div id="total_months" class="input-box">
-            <label for="tm" class="details">Total Months </label>
-            <input id="tm" onchange="multiplyMonth()" type="text" name="total_months"/>
-          </div>
+                <div class="input-box">
+                    <label for="received_date" class="details">Received Date</label>
+                    <input id="received_date" type="date" name="received_date" required/>
+                </div>
 
-          <div id="total_rupees" class="input-box">
-            <label for="tr" class="details">Total Rupees </label>
-            <input id="tr" type="text" name="total_rupees"/>
-          </div>
+                <div class="input-box">
+                    <label for="extra_payment" class="details">Extra Payment</label>
+                    <input id="extra_payment" type="text" name="extra_payment" value="0"/>
+                </div>
 
-          <div class="input-box">
-            <label for="extra_payment" class="details">Extra Payment</label>
-            <input id="extra_payment" type="text" name="extra_payment" value="0" />
-          </div>
+                <div class="input-box">
+                    <label for="agreement_date" class="details">Agreement Date</label>
+                    <input id="agreement_date" type="date" name="agreement_date"/>
+                </div>
 
-          <div class="input-box">
-            <label for="received_date" class="details">Received Date</label>
-            <input id="received_date" type="date" name="received_date" required />
-          </div>
+                <div id="ten_mn" class="input-box">
+                    <label for="mob_num" class="details">Tenant Mobile Number</label>
+                    <input id="mob_num" type="tel" pattern="[0-9]{10}" name="tenant_mobile_number"/>
+                </div>
 
-          <div class="input-box">
-            <label for="agreement_date" class="details">Agreement Date</label>
-            <input id="agreement_date" type="date" name="agreement_date" />
-          </div>
+                <div id="ten_dod" class="input-box">
+                    <label for="date" class="details">Tenant Date of Death</label>
+                    <input id="date" type="date" name="tenant_dod"/>
+                </div>
 
-          <div class="input-box" style="width: 100%;">
-            <label for="notes" class="details">Notes</label>
-            <input id="notes" type="text" name="notes" />
-          </div>
-        </div>
+                <div class="input-box" style="width: 100%;">
+                    <label for="notes" class="details">Notes</label>
+                    <input id="notes" type="text" name="notes"/>
+                </div>
+            </div>
 
-        <div class="button" onclick="confirmBillAction()">Submit</div>
-        <div id="printBtn" hidden="hidden" class="button" onclick="printAction()">Print</div>
-        <input type="hidden" id="printId" name="print">
-      </form>
+            <div class="button" onclick="confirmBillAction()">Submit</div>
+            <div id="printBtn" hidden="hidden" class="button" onclick="printAction()">Print</div>
+            <input type="hidden" id="printId" name="print">
+        </form>
     </div>
-  </div>
-  <br>
+</div>
+<br>
 
-  <div>
+<div>
     <table border="1" class="dataframe table table-bordered table-sm table-responsive-sm table-hover">
 
-      <thead>
+        <thead>
         <tr style="text-align: right;">
-          <th>House No.</th>
-          <th>Room No.</th>
-          <th>CTS No.</th>
-          <th>Name</th>
-          <th>Rent from-to</th>
-          <th>Bill for month of</th>
-          <th>Book No.</th>
-          <th>Bill No.</th>
-          <th>Total Month</th>
-          <th>@</th>
-          <th>Total Amount</th>
-          <th>Extra Payment</th>
-          <th>Purpose</th>
-          <th>Agreement Date</th>
-          <th>Notes</th>
-          <th>Mobile No.</th>
-          <th>DOD</th>
-          <!--            <th>Gender</th>-->
-          <th>Received Date</th>
-          <th>Bill ID</th>
-          <th>Update</th>
+            <th>House No.</th>
+            <th>Room No.</th>
+            <th>CTS No.</th>
+            <th>Name</th>
+            <th>Rent from-to</th>
+            <th>Bill for month of</th>
+            <th>Book No.</th>
+            <th>Bill No.</th>
+            <th>Total Month</th>
+            <th>@</th>
+            <th>Total Amount</th>
+            <th>Extra Payment</th>
+            <th>Purpose</th>
+            <th>Agreement Date</th>
+            <th>Notes</th>
+            <th>Mobile No.</th>
+            <th>DOD</th>
+            <!--            <th>Gender</th>-->
+            <th>Received Date</th>
+            <th>Bill ID</th>
+            <th>Update</th>
         </tr>
-      </thead>
-      <tbody>
+        </thead>
+        <tbody>
         {% for bill in all_bill_data %}
         <tr>
-          <td>{{bill.house_number}}</td>
-          <td>{{bill.room_number}}</td>
-          <td>{{bill.cts_number}}</td>
-          <td>{{bill.tenant_name}}</td>
-          <td>{{bill.rent_from}} -to- {{bill.rent_to}}</td>
-          <td>{{bill.bill_for_month_of}}</td>
-          <td>{{bill.book_number}}</td>
-          <td>{{bill.bill_number}}</td>
-          <td>{{bill.total_months}}</td>
-          <td>{{bill.at_the_rate_of}}</td>
-          <td>{{bill.total_rupees}}</td>
-          <td>{{bill.extra_payment}}</td>
-          <td>{{bill.purpose_for}}</td>
-          <td>{{bill.agreement_date}}</td>
-          <td>{{bill.notes}}</td>
-          <td>{{bill.tenant_mobile_number}}</td>
-          <td>{{bill.tenant_dod}}</td>
-          <!--                        <td>{{bill.tenant_gender}}</td>-->
-          <td>{{bill.received_date}}</td>
-          <td>{{bill.id}}</td>
-          <td><a href="javascript:updateBill({{bill.id}});">Update</a></td>
+            <td>{{bill.house_number}}</td>
+            <td>{{bill.room_number}}</td>
+            <td>{{bill.cts_number}}</td>
+            <td>{{bill.tenant_name}}</td>
+            <td>{{bill.rent_from}} -to- {{bill.rent_to}}</td>
+            <td>{{bill.bill_for_month_of}}</td>
+            <td>{{bill.book_number}}</td>
+            <td>{{bill.bill_number}}</td>
+            <td>{{bill.total_months}}</td>
+            <td>{{bill.at_the_rate_of}}</td>
+            <td>{{bill.total_rupees}}</td>
+            <td>{{bill.extra_payment}}</td>
+            <td>{{bill.purpose_for}}</td>
+            <td>{{bill.agreement_date}}</td>
+            <td>{{bill.notes}}</td>
+            <td>{{bill.tenant_mobile_number}}</td>
+            <td>{{bill.tenant_dod}}</td>
+            <!--                        <td>{{bill.tenant_gender}}</td>-->
+            <td>{{bill.received_date}}</td>
+            <td>{{bill.id}}</td>
+            <td><a href="javascript:updateBill({{bill.id}});">Update</a></td>
         </tr>
         {% endfor %}
-      </tbody>
+        </tbody>
     </table>
-  </div>
+</div>
 
-  <script>
+<script>
     document.getElementById("rate").value = 350;
     document.getElementById("printId").value = "";
 
@@ -344,7 +348,11 @@
         }
       );
     }
-  </script>
-  <br><br><br>
+
+
+
+
+</script>
+<br><br><br>
 </body>
 {% endblock content %}

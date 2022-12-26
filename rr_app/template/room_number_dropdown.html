@@ -1,0 +1,4 @@
+<option value="" class="details">Select Room Number</option>
+{% for room in all_room_numbers_by_house %}
+    <option value="{{room.id}}">{{room.room_number}}</option>
+{% endfor %}
