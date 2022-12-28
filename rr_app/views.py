@@ -376,8 +376,8 @@ def bill_crud_operation(request):
 
 
 def report_page(request):
+    house_obj = Bill.objects.all().order_by().values_list('house_number', flat=True).distinct()
     if request.method == 'POST':
-        house_obj = Bill.objects.all().order_by().values_list('house_number', flat=True).distinct()
         if not house_obj:
             messages.error(request, 'No Bill data available.')
             return redirect('/report_page/')
@@ -411,8 +411,6 @@ def report_page(request):
         return render(request, 'report_page.html', context)
 
     # house_obj = HouseNumber.objects.all()
-    house_obj = Bill.objects.all().order_by().values_list('house_number', flat=True).distinct()
-    print('bill_house_numbers', house_obj)
     context = {'house_obj': house_obj}
     return render(request, 'report_page.html', context)
 
