@@ -378,6 +378,9 @@ def bill_crud_operation(request):
 def report_page(request):
     if request.method == 'POST':
         house_obj = Bill.objects.all().order_by().values_list('house_number', flat=True).distinct()
+        if not house_obj:
+            messages.error(request, 'No Bill data available.')
+            return redirect('/report_page/')
         from_date = request.POST.get('from_date')
         to_date = request.POST.get('to_date')
         house_number = request.POST['house']
