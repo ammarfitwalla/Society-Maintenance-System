@@ -8,45 +8,20 @@
 $(document).ready(function(){
    $('#house').on('change', function(e){
         var house_id = $(this).val();
-        var house_id = $("#house option:selected").text();
-        var url = '/load_room_numbers/'
+        var url = '/load_cts_numbers/'
         $.ajax({
             type: 'GET',
             url: url,
             data: {'house_id': house_id},
             success: function(res){
                     queryset = JSON.parse(res);
-
-                    $('#room').html('');
-                     content1 = '<option value="">Select Room Number</option>'
-                    $('#room').append(content1);
-                    for(i=0; i < queryset.length; i++){
-                        name =  queryset[i].room_number
-                        content = '<option value="'+ name +'">'+ name +'</option>'
-                        $('#room').append(content);
-                    }
-            },
-            error: function(err){
-                console.log(err);
-            }
-        });
-    });
-});
-
-$(document).ready(function(){
-   $('#room').on('change', function(e){
-        var room_id = $("#room option:selected").text();
-        var url = '/load_cts_numbers/'
-        $.ajax({
-            type: 'GET',
-            url: url,
-            data: {'room_id': room_id},
-            success: function(res){
-                    queryset = JSON.parse(res);
                     $('#cts').html('');
+                     content1 = '<option value="">Select CTS Number</option>'
+                    $('#cts').append(content1);
                     for(i=0; i < queryset.length; i++){
-                        name =  queryset[i].cts_number
-                        content = '<option value="'+ name +'">'+ name +'</option>'
+                        id = queryset[i].pk;
+                        name =  queryset[i].fields.cts_number
+                        content = '<option value="'+ id +'">'+ name +'</option>'
                         $('#cts').append(content);
                     }
             },
@@ -57,23 +32,52 @@ $(document).ready(function(){
     });
 });
 
+
+$(document).ready(function(){
+   $('#cts').on('change', function(e){
+        var cts_id = $(this).val();
+        var url = '/load_room_numbers/'
+        $.ajax({
+            type: 'GET',
+            url: url,
+            data: {'cts_id': cts_id},
+            success: function(res){
+                    queryset = JSON.parse(res);
+                    $('#room').html('');
+                     content1 = '<option value="">Select Room Number</option>'
+                    $('#room').append(content1);
+                    for(i=0; i < queryset.length; i++){
+                        id = queryset[i].pk;
+                        name =  queryset[i].fields.room_number
+                        content = '<option value="'+ id +'">'+ name +'</option>'
+                        $('#room').append(content);
+                    }
+            },
+            error: function(err){
+                console.log(err);
+            }
+        });
+    });
+});
+
+
 $(document).ready(function(){
    $('#room').on('change', function(e){
-        var room_id = $("#room option:selected").text();
-        var house_id = $("#house option:selected").text();
+        var room_id = $(this).val();
         var url = '/load_tenant_names/'
         $.ajax({
             type: 'GET',
             url: url,
-            data: {'room_id': room_id, 'house_id':house_id},
+            data: {'room_id': room_id},
             success: function(res){
                     queryset = JSON.parse(res);
                     $('#tenant_name').html('');
                      content1 = '<option value="">Select Tenant Name</option>'
                     $('#tenant_name').append(content1);
                     for(i=0; i < queryset.length; i++){
-                        name =  queryset[i].tenant_name
-                        content = '<option value="'+ name +'">'+ name +'</option>'
+                        id = queryset[i].pk;
+                        name =  queryset[i].fields.tenant_name
+                        content = '<option value="'+ id +'">'+ name +'</option>'
                         $('#tenant_name').append(content);
                     }
             },
@@ -127,10 +131,11 @@ $(document).ready(function(){
 
                 <div class="input-box" id="div_house_id">
                     <label for="house" class="details">House Number</label>
+
                     <select name="house" id="house" style="width:100%;">
                         <option value="">Select House Number</option>
                         {% for house_number in house_obj %}
-                        <option value="{{house_number}}">{{house_number}}</option>
+                        <option value="{{ house_number.id }}">{{house_number}}</option>
                         {% endfor %}
                     </select>
                 </div>

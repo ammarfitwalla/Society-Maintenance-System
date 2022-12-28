@@ -1,4 +1,3 @@
-import json
 import re
 import os
 import cv2
@@ -10,8 +9,6 @@ import ghostscript
 import numpy as np
 import pandas as pd
 from PIL import Image
-from django.core import serializers
-
 from rr_app.models import *
 from win32 import win32print
 from datetime import datetime
@@ -159,7 +156,6 @@ def master(request):
     """
 
     master_df = pd.DataFrame(master_values, columns=['House No.', 'Room No.', 'CTS No.', 'Tenant Name', 'DOD', 'Gender', 'Mobile No.', 'Notes', 'Edit'])
-    master_df = master_df.sort_values(['House No.', 'Room No.'])
     master_df = master_df.to_html(index_names=False, index=False, classes="table table-bordered table-sm table-responsive-sm table-hover", escape=False, render_links=True)
     if inserted:
         return redirect('/master/')
@@ -220,7 +216,7 @@ def tenant_bill(request):
 
         get_house_id = HouseNumber.objects.get(house_number=bill_house_number)
         get_cts_id = CTSNumber.objects.get(house=get_house_id.id, cts_number=bill_cts_number)
-        get_room_number_id = RoomNumber.objects.filter(room_number=bill_room_number, house=get_house_id.id, cts=get_cts_id.id).values()[0]
+        get_room_number_id = RoomNumber.objects.filter(house=get_house_id.id, cts=get_cts_id.id).values()[0]
         get_tenant_attrs = (TenantAttributes.objects.filter(room=get_room_number_id['id']).values())[0]
 
         if request.session['bill_crud'] == 'Edit':
@@ -283,8 +279,14 @@ def tenant_bill(request):
                         a5im.save(pdf_name, 'PDF', quality=100)
                         # subprocess.Popen([pdf_name], shell=True)  # Uncomment to open the pdf automatically
                         try:
-                            args = ["-dPrinted", "-dBATCH", "-dNOSAFER", "-dNOPAUSE", "-dNOPROMPT"
-                                                                                      "-q", "-dNumCopies#1", "-sDEVICE#mswinpr2", f'-sOutputFile#"%printer%{default_printer}"', f'"{pdf_name}"']
+                            args = [
+                                    "-dPrinted", "-dBATCH", "-dNOSAFER", "-dNOPAUSE", "-dNOPROMPT"
+                                    "-q",
+                                    "-dNumCopies#1",
+                                    "-sDEVICE#mswinpr2",
+                                    f'-sOutputFile#"%printer%{default_printer}"',
+                                    f'"{pdf_name}"'
+                                    ]
                             encoding = locale.getpreferredencoding()
                             args = [a.encode(encoding) for a in args]
                             ghostscript.Ghostscript(*args)
@@ -296,7 +298,6 @@ def tenant_bill(request):
         else:
             # TODO: Check if data is present in db, if present, return message saying data already exists
             print("bill_room_number", bill_room_number)
-            print("tenant details", get_tenant_attrs['tenant_name'])
             save_bill_details = Bill(house_number=bill_house_number, cts_number=bill_cts_number, room_number=bill_room_number, tenant_name=get_tenant_attrs['tenant_name'], tenant_permanent_address=get_tenant_attrs['tenant_permanent_address'], tenant_mobile_number=get_tenant_attrs['tenant_mobile_number'], tenant_dod=get_tenant_attrs['tenant_dod'], tenant_gender=get_tenant_attrs['tenant_gender'], bill_for_month_of=bill_for_month_of_short, book_number=bill_book_number, bill_number=bill_number, purpose_for=purpose_for, rent_from=rent_for_month_from_short, rent_to=rent_for_month_to_short, at_the_rate_of=at_the_rate_of, total_months=total_months, total_rupees=total_rupees, received_date=received_date, extra_payment=extra_payment, agreement_date=agreement_date, notes=notes)
             save_bill_details.save()
             messages.success(request, "New Bill '" + bill_number + "' Added Successfully!")
@@ -377,64 +378,83 @@ def bill_crud_operation(request):
 
 def report_page(request):
     if request.method == 'POST':
-        house_obj = Bill.objects.all().order_by().values_list('house_number', flat=True).distinct()
-        from_date = request.POST.get('from_date')
-        to_date = request.POST.get('to_date')
-        house_number = request.POST['house']
-        cts_number = request.POST.get('cts')
-        room_number = request.POST.get('room')
-        tenant_name = request.POST.get('tenant_name')
+        house_object = HouseNumber.objects.all()
+        total_tenants = total_months = total_amounts = total_extra_amounts = grand_total = "N/A"
+        from_month = request.POST.get('from_month')
+        to_month = request.POST.get('to_month')
+        house_id = request.POST.get('house')
+        room_id = request.POST.get('room')
+        # cts = request.POST.get('cts')
+        house = room = ""
+        print("house_id", "room_id")
+        print(house_id, room_id)
 
-        if house_number and room_number and tenant_name:
-            filtered_bill_data = Bill.objects.filter(received_date__range=(from_date, to_date),
-                house_number=house_number, room_number=room_number, tenant_name=tenant_name)
-        elif house_number and room_number:
-            filtered_bill_data = Bill.objects.filter(received_date__range=(from_date, to_date),
-                house_number=house_number, room_number=room_number)
-        elif house_number:
-            filtered_bill_data = Bill.objects.filter(received_date__range=(from_date, to_date), house_number=house_number)
+        if house_id and room_id:
+            house_dict = (HouseNumber.objects.filter(id=house_id).values())[0]
+            house = house_dict['house_number']
+            room_dict = (RoomNumber.objects.filter(id=room_id, house_id=house_id).values())[0]
+            room = room_dict['room_number']
+            filtered_bill_data = Bill.objects.filter(received_date__range=(from_month, to_month), house_number=house, room_number=room)
+        elif house_id:
+            house_dict = (HouseNumber.objects.filter(id=house_id).values())[0]
+            house = house_dict['house_number']
+            filtered_bill_data = Bill.objects.filter(received_date__range=(from_month, to_month), house_number=house)
+        elif room_id:
+            room_dict = (RoomNumber.objects.filter(id=room_id, house_id=house_id).values())[0]
+            room = room_dict['room_number']
+            filtered_bill_data = Bill.objects.filter(received_date__range=(from_month, to_month), room_number=room)
         else:
-            filtered_bill_data = Bill.objects.all()
+            filtered_bill_data = Bill.objects.filter(received_date__range=(from_month, to_month))
+        if filtered_bill_data:
+            total_tenants = filtered_bill_data.count()
+            total_months = filtered_bill_data.aggregate(Sum('total_months'))['total_months__sum']
+            total_amounts = filtered_bill_data.aggregate(Sum('total_rupees'))['total_rupees__sum']
+            total_extra_amounts = filtered_bill_data.aggregate(Sum('extra_payment'))['extra_payment__sum']
+            grand_total = int(total_amounts) + int(total_extra_amounts)
+        else:
+            messages.error(request, 'No data available for selected dates!')
+            context = {'house_': house_object, 'house_number_id': house_id,
+                       'total_tenants': total_tenants, 'total_months': total_months,
+                       'total_amounts': total_amounts, 'total_extra_amounts': total_extra_amounts,
+                       'grand_total': grand_total, 'from_date': from_month, 'to_date': to_month,
+                       'house_number': house}
+            return render(request, 'report_page.html', context)
 
-        total_tenants = filtered_bill_data.count()
-        total_months = filtered_bill_data.aggregate(Sum('total_months'))['total_months__sum']
-        total_amounts = filtered_bill_data.aggregate(Sum('total_rupees'))['total_rupees__sum']
-        total_extra_amounts = filtered_bill_data.aggregate(Sum('extra_payment'))['extra_payment__sum']
-        grand_total = int(total_amounts) + int(total_extra_amounts)
-
-        context = {'house_obj': house_obj, 'bill_table_data': filtered_bill_data, 'total_tenants': total_tenants,
-                   'total_months': total_months, 'total_amounts': total_amounts, 'total_extra_amounts': total_extra_amounts,
-                   'grand_total': grand_total, 'from_date': from_date, 'to_date': to_date}
+        context = {'house_': house_object, 'bill_table_data': filtered_bill_data,
+                   'total_tenants': total_tenants, 'total_months': total_months,
+                   'total_amounts': total_amounts, 'total_extra_amounts': total_extra_amounts,
+                   'grand_total': grand_total, 'from_date': from_month, 'to_date': to_month,
+                   'house_number': house, 'house_number_id': house_id, 'room_number': room}
         return render(request, 'report_page.html', context)
 
-    # house_obj = HouseNumber.objects.all()
-    house_obj = Bill.objects.all().order_by().values_list('house_number', flat=True).distinct()
-    print('bill_house_numbers', house_obj)
-    context = {'house_obj': house_obj}
+    house_ = HouseNumber.objects.all()
+    total_tenants = total_months = total_amounts = total_extra_amounts = grand_total = "N/A"
+    context = {'house_': house_, 'total_tenants': total_tenants, 'total_months': total_months,
+                   'total_amounts': total_amounts, 'total_extra_amounts': total_extra_amounts,
+                   'grand_total': grand_total}
     return render(request, 'report_page.html', context)
 
 
 def load_room_numbers(request):
-    if request.is_ajax():
-        house_number = request.GET.get('house_id')
-        room_number = list(Bill.objects.filter(house_number=house_number).order_by().values('room_number').distinct())
-        return JsonResponse(json.dumps(room_number), safe=False)
+    house_id = request.GET.get('house')
+    all_room_numbers_by_house = RoomNumber.objects.filter(house_id=house_id).order_by('room_number')
+    return render(request, 'room_number_dropdown.html', {'all_room_numbers_by_house': all_room_numbers_by_house})
 
 
 def load_cts_numbers(request):
-    if request.is_ajax():
-        room_number = request.GET.get('room_id')
-        cts_number = list(Bill.objects.filter(room_number=room_number).order_by().values('cts_number').distinct())
-        # json_cts_numbers = serializers.serialize('json', cts_number)
-        # return JsonResponse(json_cts_numbers, safe=False)
-        return JsonResponse(json.dumps(cts_number), safe=False)
+    house_id = request.GET.get('house')
+    selected_room_number_id = request.GET.get('room_number')
+    # all_room_numbers_by_house = RoomNumber.objects.filter(house_id=house_id, room_number=selected_room_number).order_by('room_number')
+    cts_number_id_by_house_room = list(RoomNumber.objects.filter(house_id=house_id, id=selected_room_number_id).values_list('cts_id', flat=True))
+    cts_number_by_id = (CTSNumber.objects.filter(house_id=house_id, id=cts_number_id_by_house_room[0]).values())[0]
+    cts_number_by_id = cts_number_by_id['cts_number']
+    return render(request, 'cts_number_dropdown.html', {'all_cts_numbers_by_house': cts_number_by_id})
 
-
-def load_tenant_names(request):
-    if request.is_ajax():
-        room_number = request.GET.get('room_id')
-        house_number = request.GET.get('house_id')
-        tenant_names = list(Bill.objects.filter(house_number=house_number, room_number=room_number).order_by().values('tenant_name').distinct())
-        # json_tenant_names = serializers.serialize('json', tenant_name)
-        # return JsonResponse(json_tenant_names, safe=False)
-        return JsonResponse(json.dumps(tenant_names), safe=False)
+# def load_tenant_name(request):
+#     house_id = request.GET.get('house')
+#     selected_room_number_id = request.GET.get('room_number')
+#     # all_room_numbers_by_house = RoomNumber.objects.filter(house_id=house_id, room_number=selected_room_number).order_by('room_number')
+#     cts_number_id_by_house_room = list(RoomNumber.objects.filter(house_id=house_id, id=selected_room_number_id).values_list('cts_id', flat=True))
+#     cts_number_by_id = (CTSNumber.objects.filter(house_id=house_id, id=cts_number_id_by_house_room[0]).values())[0]
+#     cts_number_by_id = cts_number_by_id['cts_number']
+#     return render(request, 'cts_number_dropdown.html', {'all_cts_numbers_by_house': cts_number_by_id})

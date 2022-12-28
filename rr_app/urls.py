@@ -12,7 +12,7 @@ urlpatterns = [
     path('name_room_list/', views.name_room_list, name='name_room_list'),
     path('get_old_bill/', views.get_old_bill, name='get_old_bill'),
     path('report_page/', views.report_page, name='report_page'),
-    path('load-room-numbers/', views.load_room_numbers, name='ajax_load_room_numbers'),
-    path('load-cts-numbers/', views.load_cts_numbers, name='ajax_load_cts_numbers'),
-    # path('tenant_bill/<bill_id>', views.tenant_bill, name='tenant_bill_update'),
+    path('load_cts_numbers/', views.load_cts_numbers, name='load_cts_numbers'),
+    path('load_room_numbers/', views.load_room_numbers, name='load_room_numbers'),
+    path('load_tenant_names/', views.load_tenant_names, name='load_tenant_names'),
 ]
