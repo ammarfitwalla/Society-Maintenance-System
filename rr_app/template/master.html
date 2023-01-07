@@ -36,7 +36,7 @@
       <div class="user-details">
         <div class="input-box">
           <label for="browser">House Number</label>
-          <input list="browsers" name="house" id="browser" required>
+          <input onchange="getRoomCtsList()" list="browsers" name="house" id="browser" required>
           <datalist id="browsers">
             {% for i in temp %}
             <option value="{{ i }}">
@@ -44,12 +44,16 @@
           </datalist>
         </div>
         <div class="input-box">
-          <label for="room_id" class="details">Room Number</label>
-          <input id="room_id" type="text" name="room" required />
+          <label for="room_id">Room Number</label>
+          <input list="room_list" name="room" id="room_id" required>
+          <datalist id="room_list">
+          </datalist>
         </div>
         <div class="input-box">
-          <label for="cts_id" class="details">CTS Number</label>
-          <input id="cts_id" type="text" name="cts" required />
+          <label for="cts_id">CTS Number</label>
+          <input list="cts_list" name="cts" id="cts_id" required>
+          <datalist id="cts_list">
+          </datalist>
         </div>
         <div class="input-box" style="width: 100%;">
           <label for="tenant_id" class="details">Tenant Name</label>
@@ -122,6 +126,50 @@
           alert('Data fetch failed, please refresh the page and try again.');
         }
         topFunction();
+      }
+    );
+  }
+
+  function getRoomCtsList() {
+    var house_val = document.getElementById("browser").value;
+    let room_list = document.getElementById("room_list");
+    let cts_list = document.getElementById("cts_list");
+
+    while (room_list.firstChild) {
+      room_list.removeChild(room_list.firstChild);
+    }
+    while (cts_list.firstChild) {
+      cts_list.removeChild(cts_list.firstChild);
+    }
+
+    $.post("{% url 'room_cts_list' %}",
+      {
+        csrfmiddlewaretoken: '{{ csrf_token}}',
+        'house_val': house_val,
+      },
+      function (data) {
+        console.log(data);
+
+        if (data['all_room_num'].length > 0) {
+          for (let r = 0; r < data['all_room_num'].length; r++) {
+            let li = document.createElement("option");
+            li.innerText = data['all_room_num'][r];
+            room_list.appendChild(li);
+          }
+        } else {
+          alert('Room Data fetch failed, please refresh the page and try again.');
+        }
+
+        if (data['all_cts_num'].length > 0) {
+          for (let r = 0; r < data['all_cts_num'].length; r++) {
+            let li = document.createElement("option");
+            li.innerText = data['all_cts_num'][r];
+            cts_list.appendChild(li);
+          }
+        } else {
+          alert('CTS Data fetch failed, please refresh the page and try again.');
+        }
+
       }
     );
   }
