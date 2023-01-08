@@ -342,6 +342,15 @@ def name_room_list(request):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def room_cts_list(request):
+    get_house = HouseNumber.objects.filter(house_number=request.POST['house_val'])[0]
+    all_room_num = list(RoomNumber.objects.filter(house=get_house).order_by('room_number').values_list('room_number', flat=True).distinct())
+    all_cts_num = list(CTSNumber.objects.filter(house=get_house).order_by('cts_number').values_list('cts_number', flat=True).distinct())
+
+    return JsonResponse({'all_room_num': all_room_num, 'all_cts_num': all_cts_num,})
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def get_old_bill(request):
     # all_bill_data = Bill.objects.all()
     # if all_bill_data:
