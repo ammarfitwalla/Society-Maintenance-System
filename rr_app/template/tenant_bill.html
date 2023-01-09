@@ -156,8 +156,8 @@
 <br>
 
 <div>
-    <table border="1" class="dataframe table table-bordered table-sm table-responsive-sm table-hover">
-
+<input style="width: 90%; margin: auto auto auto 5%;" type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
+    <table id="billTable" border="1" class="dataframe table table-bordered table-sm table-responsive-sm table-hover">
         <thead>
         <tr style="text-align: right;">
             <th>House No.</th>
@@ -352,7 +352,25 @@
     }
 
 
-
+function myFunction() {
+  var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("billTable");
+  tr = table.getElementsByTagName("tr");
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[3];
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      console.log(txtValue)
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+}
 
 </script>
 <br><br><br>
