@@ -148,6 +148,7 @@
             </div>
 
             <div class="button" onclick="confirmBillAction()">Submit</div>
+<!--            <div id="downloadBtn" hidden="hidden" class="button">Download Bill</div> // need to write this function in views.py -->
             <div id="printBtn" hidden="hidden" class="button" onclick="printAction()">Print</div>
             <input type="hidden" id="printId" name="print">
         </form>
@@ -156,7 +157,7 @@
 <br>
 
 <div>
-<input style="width: 90%; margin: auto auto auto 5%;" type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
+<input style="width: 90%; margin: auto auto auto 5%;" type="text" id="myInput" onkeyup="searchTable()" placeholder="Search the table..." title="Type in here">
     <table id="billTable" border="1" class="dataframe table table-bordered table-sm table-responsive-sm table-hover">
         <thead>
         <tr style="text-align: right;">
@@ -352,26 +353,28 @@
     }
 
 
-function myFunction() {
-  var input, filter, table, tr, td, i, txtValue;
+function searchTable(){
+  var input, filter, table, tr, td, i;
   input = document.getElementById("myInput");
   filter = input.value.toUpperCase();
   table = document.getElementById("billTable");
   tr = table.getElementsByTagName("tr");
   for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td")[3];
-    if (td) {
-      txtValue = td.textContent || td.innerText;
-      console.log(txtValue)
-      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        tr[i].style.display = "";
-      } else {
-        tr[i].style.display = "none";
+    td = tr[i].getElementsByTagName("td") ;
+    for(j=0 ; j<td.length ; j++)
+    {
+      let tdata = td[j] ;
+      if (tdata) {
+        if (tdata.innerHTML.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+          break ;
+        } else {
+          tr[i].style.display = "none";
+        }
       }
     }
   }
 }
-
 </script>
 <br><br><br>
 </body>
