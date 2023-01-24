@@ -112,8 +112,10 @@ def master(request):
                 insert_room_number.save()
                 get_room_number_id = RoomNumber.objects.get(id=room_number_id)
 
+            # TODO: Need to update "House number" and "CTS Number" as like "Room Number"
+
             insert_tenant_attributes = TenantAttributes(id=request.session['tenant_id'], room=get_room_number_id, tenant_name=get_tenant_name, tenant_permanent_address=get_permanent_address, tenant_mobile_number=get_tenant_mobile_number, tenant_dod=get_tenant_dod, tenant_gender=get_tenant_gender)
-            insert_tenant_attributes.save()
+            insert_tenant_attributes.save(update_fields=['room', 'tenant_name', 'tenant_permanent_address', 'tenant_mobile_number', 'tenant_dod', 'tenant_gender'])
             messages.success(request, "Tenant '" + get_tenant_name + "' Updated Successfully!")
         else:
             if RoomNumber.objects.filter(house=get_house_number_id, room_number=get_room_number).exists():
@@ -160,7 +162,7 @@ def master(request):
 
     master_df = pd.DataFrame(master_values, columns=['House No.', 'Room No.', 'CTS No.', 'Tenant Name', 'DOD', 'Gender', 'Mobile No.', 'Notes', 'Edit'])
     master_df = master_df.sort_values(['House No.', 'Room No.'])
-    master_df = master_df.to_html(index_names=False, index=False, classes="table table-bordered table-sm table-responsive-sm table-hover", escape=False, render_links=True)
+    master_df = master_df.to_html(index_names=False, index=False, classes="table table-bordered table-sm table-responsive-sm table-hover", escape=False, render_links=True, table_id="masterTable")
     if inserted:
         return redirect('/master/')
     context = {'master_df': master_df, 'temp': temp}
@@ -347,7 +349,7 @@ def room_cts_list(request):
     all_room_num = list(RoomNumber.objects.filter(house=get_house).order_by('room_number').values_list('room_number', flat=True).distinct())
     all_cts_num = list(CTSNumber.objects.filter(house=get_house).order_by('cts_number').values_list('cts_number', flat=True).distinct())
 
-    return JsonResponse({'all_room_num': all_room_num, 'all_cts_num': all_cts_num,})
+    return JsonResponse({'all_room_num': all_room_num, 'all_cts_num': all_cts_num, })
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -398,11 +400,9 @@ def report_page(request):
         tenant_name = request.POST.get('tenant_name')
 
         if house_number and room_number and tenant_name:
-            filtered_bill_data = Bill.objects.filter(received_date__range=(from_date, to_date),
-                house_number=house_number, room_number=room_number, tenant_name=tenant_name)
+            filtered_bill_data = Bill.objects.filter(received_date__range=(from_date, to_date), house_number=house_number, room_number=room_number, tenant_name=tenant_name)
         elif house_number and room_number:
-            filtered_bill_data = Bill.objects.filter(received_date__range=(from_date, to_date),
-                house_number=house_number, room_number=room_number)
+            filtered_bill_data = Bill.objects.filter(received_date__range=(from_date, to_date), house_number=house_number, room_number=room_number)
         elif house_number:
             filtered_bill_data = Bill.objects.filter(received_date__range=(from_date, to_date), house_number=house_number)
         else:
@@ -414,9 +414,7 @@ def report_page(request):
         total_extra_amounts = filtered_bill_data.aggregate(Sum('extra_payment'))['extra_payment__sum']
         grand_total = int(total_amounts) + int(total_extra_amounts)
 
-        context = {'house_obj': house_obj, 'bill_table_data': filtered_bill_data, 'total_tenants': total_tenants,
-                   'total_months': total_months, 'total_amounts': total_amounts, 'total_extra_amounts': total_extra_amounts,
-                   'grand_total': grand_total, 'from_date': from_date, 'to_date': to_date}
+        context = {'house_obj': house_obj, 'bill_table_data': filtered_bill_data, 'total_tenants': total_tenants, 'total_months': total_months, 'total_amounts': total_amounts, 'total_extra_amounts': total_extra_amounts, 'grand_total': grand_total, 'from_date': from_date, 'to_date': to_date}
         return render(request, 'report_page.html', context)
 
     # house_obj = HouseNumber.objects.all()

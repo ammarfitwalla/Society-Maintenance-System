@@ -90,6 +90,7 @@
 
 <br>
 <div>
+<input style="width: 90%; margin: auto auto auto 5%;" type="text" id="myInput" onkeyup="searchTable()" placeholder="Search the table..." title="Type in here">
   {% if master_df %}
   {{ master_df | safe}}
   {% endif %}
@@ -173,6 +174,30 @@
       }
     );
   }
+
+
+function searchTable(){
+  var input, filter, table, tr, td, i;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("masterTable");
+  tr = table.getElementsByTagName("tr");
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td") ;
+    for(j=0 ; j<td.length ; j++)
+    {
+      let tdata = td[j] ;
+      if (tdata) {
+        if (tdata.innerHTML.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+          break ;
+        } else {
+          tr[i].style.display = "none";
+        }
+      }
+    }
+  }
+}
 
 </script>
 
