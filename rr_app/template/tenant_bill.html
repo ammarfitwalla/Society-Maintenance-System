@@ -3,6 +3,31 @@
 
 {% block content %}
 
+<!--<style>-->
+<!--        table {-->
+<!--            border-collapse: collapse;-->
+<!--            border-bottom: 1px solid #ddd;-->
+<!--        }-->
+<!--        thead {-->
+<!--            background-color: #333;-->
+<!--            color: #fff;-->
+<!--        }-->
+<!--        thead,tbody {-->
+<!--            display: block;-->
+<!--        }-->
+<!--        tr, th,td {-->
+<!--            padding: 8px 10px;-->
+<!--            border: 1px solid #ddd;-->
+<!--            width: 200px;-->
+<!--            box-sizing: border-box;-->
+<!--        }-->
+<!--        tbody {-->
+<!--            height: 190px;-->
+<!--            overflow-y: scroll-->
+<!--        }-->
+<!--</style>-->
+
+
 <body>
 <div class="container">
 
@@ -67,23 +92,23 @@
 
                 <div class="input-box">
                     <label for="bill_for_month_of" class="details">Bill for month of</label>
-                    <input id="bill_for_month_of" type="month" name="bill_for_month_of"/>
+                    <input id="bill_for_month_of" type="month" name="bill_for_month_of" required/>
                 </div>
 
                 <div class="input-box">
                     <label for="bill_number" class="details">Bill Number</label>
                     <!--            <input id="bill_number" type="text" name="bill_number" required />-->
-<!--                    <input id="bill_number" type="text" name="bill_number" value="{{last_bill_number}}"-->
-<!--                           readonly="readonly"/>-->
-                    <input id="bill_number" type="text" name="bill_number"/>
+                    <!--                    <input id="bill_number" type="text" name="bill_number" value="{{last_bill_number}}"-->
+                    <!--                           readonly="readonly"/>-->
+                    <input id="bill_number" type="text" name="bill_number" required/>
                 </div>
 
                 <div class="input-box">
                     <label for="book_number" class="details">Book Number</label>
                     <!--            <input id="book_number" type="text" name="book_number" required />-->
-<!--                    <input id="book_number" type="text" name="book_number" value="{{last_book_number}}"-->
-<!--                           readonly="readonly"/>-->
-                    <input id="book_number" type="text" name="book_number"/>
+                    <!--                    <input id="book_number" type="text" name="book_number" value="{{last_book_number}}"-->
+                    <!--                           readonly="readonly"/>-->
+                    <input id="book_number" type="text" name="book_number" required/>
                 </div>
 
                 <div class="input-box">
@@ -148,7 +173,7 @@
             </div>
 
             <div class="button" onclick="confirmBillAction()">Submit</div>
-<!--            <div id="downloadBtn" hidden="hidden" class="button">Download Bill</div> // need to write this function in views.py -->
+            <!--            <div id="downloadBtn" hidden="hidden" class="button">Download Bill</div> // need to write this function in views.py -->
             <div id="printBtn" hidden="hidden" class="button" onclick="printAction()">Print</div>
             <input type="hidden" id="printId" name="print">
         </form>
@@ -156,11 +181,13 @@
 </div>
 <br>
 
-<div>
-<input style="width: 90%; margin: auto auto auto 5%;" type="text" id="myInput" onkeyup="searchTable()" placeholder="Search the table..." title="Type in here">
-    <table id="billTable" border="1" class="dataframe table table-bordered table-sm table-responsive-sm table-hover">
+<input style="width: 89%; margin: auto auto auto 5%;" type="text" id="myInput" onkeyup="searchTable()"
+       placeholder="Search the table..." title="Type in here">
+<div style="overflow:scroll;height:300px;width:100%;overflow:auto">
+    <table id="billTable" width="100%" border="1" class="dataframe table table-bordered table-sm table-responsive-sm table-hover">
         <thead>
         <tr style="text-align: right;">
+            <th>Index</th>
             <th>House No.</th>
             <th>Room No.</th>
             <th>CTS No.</th>
@@ -187,6 +214,7 @@
         <tbody>
         {% for bill in all_bill_data %}
         <tr>
+            <td><b>{{ forloop.revcounter }}</b></td>
             <td>{{bill.house_number}}</td>
             <td>{{bill.room_number}}</td>
             <td>{{bill.cts_number}}</td>
@@ -213,6 +241,7 @@
         </tbody>
     </table>
 </div>
+
 
 <script>
     document.getElementById("rate").value = 350;
@@ -375,7 +404,10 @@ function searchTable(){
     }
   }
 }
+
+
 </script>
+
 <br><br><br>
 </body>
 {% endblock content %}

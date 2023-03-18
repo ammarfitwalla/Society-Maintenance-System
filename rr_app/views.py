@@ -1,7 +1,7 @@
-import json
 import re
 import os
 import cv2
+import json
 import locale
 import calendar
 import win32print
@@ -10,17 +10,16 @@ import ghostscript
 import numpy as np
 import pandas as pd
 from PIL import Image
-from django.core import serializers
-
 from rr_app.models import *
 from win32 import win32print
 from datetime import datetime
 from django.db.models import Sum
 from django.contrib import messages
+from django.core import serializers
 from django.http import HttpResponse
 from django.http import JsonResponse
 from rr_project.settings import MEDIA_ROOT
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.cache import cache_control
 from django.contrib.humanize.templatetags.humanize import ordinal
 
@@ -130,14 +129,12 @@ def master(request):
             insert_tenant_attributes.save()
             last_tenant_db_data = TenantAttributes.objects.last()
             master_values.append([last_tenant_db_data.id, get_house_number, get_room_number, get_cts_number, get_tenant_name, get_tenant_dod, get_tenant_gender, get_tenant_mobile_number, get_permanent_address])
-            inserted = True
             messages.success(request, "New Tenant '" + get_tenant_name + "' Added Successfully!")
         return redirect('/master/')
 
     request.session['master_crud'] = 'Add'
     request.session['tenant_id'] = 'new'
     all_tenant_db_data = TenantAttributes.objects.all().values()
-    inserted = False
     temp = list(HouseNumber.objects.all().values_list('house_number', flat=True))
     """
     fetching records from db, inserting into DataFrame and displaying on Master page.
@@ -162,9 +159,10 @@ def master(request):
 
     master_df = pd.DataFrame(master_values, columns=['House No.', 'Room No.', 'CTS No.', 'Tenant Name', 'DOD', 'Gender', 'Mobile No.', 'Notes', 'Edit'])
     master_df = master_df.sort_values(['House No.', 'Room No.'])
-    master_df = master_df.to_html(index_names=False, index=False, classes="table table-bordered table-sm table-responsive-sm table-hover", escape=False, render_links=True, table_id="masterTable")
-    if inserted:
-        return redirect('/master/')
+    master_df = master_df.reset_index(drop=True)
+    master_df.index += 1
+    master_df = master_df.to_html(index_names=False, classes="table table-bordered table-sm table-responsive-sm table-hover", escape=False, render_links=True, table_id="masterTable")
+
     context = {'master_df': master_df, 'temp': temp}
     return render(request, 'master.html', context)
 
@@ -220,8 +218,14 @@ def tenant_bill(request):
         rent_for_month_from_short = num_date_to_string(rent_for_month_from)
         rent_for_month_to_short = num_date_to_string(rent_for_month_to)
 
-        get_house_id = HouseNumber.objects.get(house_number=bill_house_number)
-        get_cts_id = CTSNumber.objects.get(house=get_house_id.id, cts_number=bill_cts_number)
+        # get_house_id = HouseNumber.objects.get(house_number=bill_house_number)
+        # get_cts_id = CTSNumber.objects.get(house=get_house_id.id, cts_number=bill_cts_number)
+
+        get_house_id = get_object_or_404(HouseNumber, house_number=bill_house_number)
+        print("----------------")
+        print(bill_house_number, get_house_id)
+        print("----------------")
+        get_cts_id = get_object_or_404(CTSNumber, house=get_house_id.id, cts_number=bill_cts_number)
         get_room_number_id = RoomNumber.objects.filter(room_number=bill_room_number, house=get_house_id.id, cts=get_cts_id.id).values()[0]
         get_tenant_attrs = (TenantAttributes.objects.filter(room=get_room_number_id['id']).values())[0]
 
@@ -390,7 +394,7 @@ def report_page(request):
     house_obj = Bill.objects.all().order_by().values_list('house_number', flat=True).distinct()
     if request.method == 'POST':
         if not house_obj:
-            messages.error(request, 'No Bill data available.')
+            messages.error(request, 'No Data Available.')
             return redirect('/report_page/')
         from_date = request.POST.get('from_date')
         to_date = request.POST.get('to_date')
@@ -409,13 +413,18 @@ def report_page(request):
             filtered_bill_data = Bill.objects.all()
 
         total_tenants = filtered_bill_data.count()
-        total_months = filtered_bill_data.aggregate(Sum('total_months'))['total_months__sum']
-        total_amounts = filtered_bill_data.aggregate(Sum('total_rupees'))['total_rupees__sum']
-        total_extra_amounts = filtered_bill_data.aggregate(Sum('extra_payment'))['extra_payment__sum']
-        grand_total = int(total_amounts) + int(total_extra_amounts)
+        if total_tenants:
+            total_months = filtered_bill_data.aggregate(Sum('total_months'))['total_months__sum']
+            total_amounts = filtered_bill_data.aggregate(Sum('total_rupees'))['total_rupees__sum']
+            total_extra_amounts = filtered_bill_data.aggregate(Sum('extra_payment'))['extra_payment__sum']
+            grand_total = int(total_amounts) + int(total_extra_amounts)
 
-        context = {'house_obj': house_obj, 'bill_table_data': filtered_bill_data, 'total_tenants': total_tenants, 'total_months': total_months, 'total_amounts': total_amounts, 'total_extra_amounts': total_extra_amounts, 'grand_total': grand_total, 'from_date': from_date, 'to_date': to_date}
-        return render(request, 'report_page.html', context)
+            context = {'house_obj': house_obj, 'bill_table_data': filtered_bill_data, 'total_tenants': total_tenants, 'total_months': total_months, 'total_amounts': total_amounts, 'total_extra_amounts': total_extra_amounts, 'grand_total': grand_total, 'from_date': from_date, 'to_date': to_date}
+            return render(request, 'report_page.html', context)
+        else:
+            messages.info(request, 'No Data Available.')
+            context = {'house_obj': house_obj, 'from_date': from_date, 'to_date': to_date}
+            return render(request, 'report_page.html', context)
 
     # house_obj = HouseNumber.objects.all()
     context = {'house_obj': house_obj}
